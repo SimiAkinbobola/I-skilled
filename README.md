@@ -24,7 +24,7 @@ This repository contains a Flask-based web application designed to streamline ca
 
 ## Features
 
-- **User Authentication:**  
+- **User Authentication::**  
   Secure login with a two-step verification process (password plus one-time code sent via email).
 
 - **Candidate Submission:**  
