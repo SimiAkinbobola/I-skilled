@@ -67,4 +67,107 @@ This repository contains a Flask-based web application designed to streamline ca
 
    ```bash
    git clone https://github.com/yourusername/your-repository-name.git
-   cd your-repository-name
+
+2. **Create a Virtual Environment and Install Dependencies:
+      python3 -m venv venv
+      source venv/bin/activate  # On Windows use: venv\Scripts\activate
+      pip install -r requirements.txt
+
+## Ensure Required Folders Exist:
+The application automatically creates necessary folders (e.g., uploads, data, Credential) if they do not exist.
+
+## Configuration
+
+Configure the application using the Config class in config.py. Ensure the following settings are defined:
+
+## Secret Keys & API Keys:
+SECRET_KEY, SENDGRID_API_KEY, DEEPSEEK_API, STRIPE_SECRET_KEY, STRIPE_PUBLIC_KEY, PAYSTACK_PUBLIC_KEY, PAYSTACK_SECRET_KEY, etc.
+File & Data Paths:
+Paths for UPLOAD_FOLDER, DATA_FOLDER, and the candidates file (CANDIDATES_FILE).
+Allowed File Extensions:
+Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg'}).
+
+## Example configuration snippet:
+
+    import os
+    
+    class Config:
+        SECRET_KEY = os.environ.get('SECRET_KEY', 'your_default_secret_key')
+        UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+        DATA_FOLDER = os.path.join(os.getcwd(), 'data')
+        CANDIDATES_FILE = os.path.join(DATA_FOLDER, 'candidates.json')
+        ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg'}
+        SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+        STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+        STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+        PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY')
+        PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY')
+        PAYSTACK_BASE_URL = os.environ.get('PAYSTACK_BASE_URL')
+        DEEPSEEK_API = os.environ.get('DEEPSEEK_API_KEY')
+        PDF_CONFIG = {
+            'wkhtmltopdf': os.environ.get('WKHTMLTOPDF_PATH', '/usr/local/bin/wkhtmltopdf')
+        }
+### Usage
+
+User Authentication
+Login:
+Visit /login and provide your username and password. Upon success, a verification code is sent to your registered email.
+Verification:
+Enter the received code at /verify to complete your login.
+Profile Update & Logout:
+Update profile details via /update-profile and log out using /logout.
+Candidate Submission & Assessment
+Submit Candidate:
+Access the candidate submission form at /submit to provide detailed candidate data. Upon submission, the candidate is automatically scored based on the selected visa category.
+View Candidates:
+Navigate to /candidates to see the list of candidates. Filtering by assessment status is available.
+Candidate Detail & Comparison:
+View detailed candidate profiles at /candidate/<candidate_id>.
+Compare multiple candidates at /compare.
+File Uploads & Petition Management
+Uploading Files:
+Use the /petition route to upload additional files (e.g., exhibits, resumes, financial proofs) into the candidate’s folder.
+Renaming Files:
+Utilize the API endpoint /api/candidate/<candidate_id>/rename_file to rename candidate files.
+Download Petition PDF:
+Generate and download a petition PDF at /candidate/<candidate_id>/pdf.
+Reports & Analysis
+Dashboard:
+The /reports route provides various statistics and charts including experience distribution, education counts, top companies, and more.
+Candidate Analysis:
+Use /candidate_analysis to get a detailed report listing strengths, weaknesses, and recommendations for each candidate.
+API Endpoints
+File Operations:
+GET /api/candidate/<candidate_id>/files – Retrieve files by folder type.
+POST /api/candidate/<candidate_id>/rename_file – Rename a candidate file.
+Petition Details:
+POST/GET /api/candidate/<candidate_id>/petition_details – Save or retrieve petition details.
+AI Content Generation:
+POST /api/genai/generate – Generate custom content (e.g., cover letters) using the Deepseek API.
+POST /api/get_example – Retrieve example prompts for content generation.
+
+
+## Project Structure
+
+    your-repository-name/
+    ├── app.py                # Main Flask application
+    ├── config.py             # Configuration settings
+    ├── Credential/           # User credential files (e.g., login.json)
+    ├── data/                 # Candidate data (candidates.json) and reference files
+    ├── static/               # Static assets (CSS, JS, images, profile pictures, etc.)
+    ├── templates/            # Jinja2 HTML templates
+    ├── uploads/              # Uploaded candidate files and documents
+    ├── requirements.txt      # Python dependencies
+    └── README.md             # Project documentation (this file)
+
+## Logging & Debugging
+
+Logging:
+The application uses Python’s built-in logging module (default level is DEBUG). Adjust the logging level in app.py if needed.
+Error Handling:
+The application provides error handling for issues such as invalid file uploads and missing candidate records, returning appropriate HTTP status codes for API responses.
+
+
+# License
+
+This project is licensed under the MIT License.
