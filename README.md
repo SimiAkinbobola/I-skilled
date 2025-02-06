@@ -82,8 +82,10 @@ Configure the application using the Config class in config.py. Ensure the follow
 
 ## Secret Keys & API Keys:
 SECRET_KEY, SENDGRID_API_KEY, DEEPSEEK_API, STRIPE_SECRET_KEY, STRIPE_PUBLIC_KEY, PAYSTACK_PUBLIC_KEY, PAYSTACK_SECRET_KEY, etc.
+
 File & Data Paths:
 Paths for UPLOAD_FOLDER, DATA_FOLDER, and the candidates file (CANDIDATES_FILE).
+
 Allowed File Extensions:
 Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg'}).
 
@@ -109,7 +111,7 @@ Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jp
         }
 ### Usage
 
-    User Authentication
+    #### User Authentication
     Login:
     Visit /login and provide your username and password. Upon success, a verification code is sent to your registered email.
     
@@ -119,7 +121,7 @@ Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jp
     Profile Update & Logout:
     Update profile details via /update-profile and log out using /logout.
     
-    Candidate Submission & Assessment
+    #### Candidate Submission & Assessment
     Submit Candidate:
     Access the candidate submission form at /submit to provide detailed candidate data. Upon submission, the candidate is automatically scored based on the selected visa category.
     
@@ -130,7 +132,7 @@ Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jp
     View detailed candidate profiles at /candidate/<candidate_id>.
     Compare multiple candidates at /compare.
     
-    File Uploads & Petition Management
+    #### File Uploads & Petition Management
     
     Uploading Files:
     Use the /petition route to upload additional files (e.g., exhibits, resumes, financial proofs) into the candidate’s folder.
@@ -141,7 +143,7 @@ Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jp
     Download Petition PDF:
     Generate and download a petition PDF at /candidate/<candidate_id>/pdf.
     
-    Reports & Analysis
+    #### Reports & Analysis
     
     Dashboard:
     The /reports route provides various statistics and charts including experience distribution, education counts, top companies, and more.
@@ -149,7 +151,7 @@ Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jp
     Candidate Analysis:
     Use /candidate_analysis to get a detailed report listing strengths, weaknesses, and recommendations for each candidate.
     
-    API Endpoints
+    #### API Endpoints
     File Operations:
     GET /api/candidate/<candidate_id>/files – Retrieve files by folder type.
     POST /api/candidate/<candidate_id>/rename_file – Rename a candidate file.
