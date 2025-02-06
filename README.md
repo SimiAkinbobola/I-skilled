@@ -109,42 +109,57 @@ Define a set of allowed file extensions (e.g., {'pdf', 'doc', 'docx', 'png', 'jp
         }
 ### Usage
 
-User Authentication
-Login:
-Visit /login and provide your username and password. Upon success, a verification code is sent to your registered email.
-Verification:
-Enter the received code at /verify to complete your login.
-Profile Update & Logout:
-Update profile details via /update-profile and log out using /logout.
-Candidate Submission & Assessment
-Submit Candidate:
-Access the candidate submission form at /submit to provide detailed candidate data. Upon submission, the candidate is automatically scored based on the selected visa category.
-View Candidates:
-Navigate to /candidates to see the list of candidates. Filtering by assessment status is available.
-Candidate Detail & Comparison:
-View detailed candidate profiles at /candidate/<candidate_id>.
-Compare multiple candidates at /compare.
-File Uploads & Petition Management
-Uploading Files:
-Use the /petition route to upload additional files (e.g., exhibits, resumes, financial proofs) into the candidate’s folder.
-Renaming Files:
-Utilize the API endpoint /api/candidate/<candidate_id>/rename_file to rename candidate files.
-Download Petition PDF:
-Generate and download a petition PDF at /candidate/<candidate_id>/pdf.
-Reports & Analysis
-Dashboard:
-The /reports route provides various statistics and charts including experience distribution, education counts, top companies, and more.
-Candidate Analysis:
-Use /candidate_analysis to get a detailed report listing strengths, weaknesses, and recommendations for each candidate.
-API Endpoints
-File Operations:
-GET /api/candidate/<candidate_id>/files – Retrieve files by folder type.
-POST /api/candidate/<candidate_id>/rename_file – Rename a candidate file.
-Petition Details:
-POST/GET /api/candidate/<candidate_id>/petition_details – Save or retrieve petition details.
-AI Content Generation:
-POST /api/genai/generate – Generate custom content (e.g., cover letters) using the Deepseek API.
-POST /api/get_example – Retrieve example prompts for content generation.
+    User Authentication
+    Login:
+    Visit /login and provide your username and password. Upon success, a verification code is sent to your registered email.
+    
+    Verification:
+    Enter the received code at /verify to complete your login.
+    
+    Profile Update & Logout:
+    Update profile details via /update-profile and log out using /logout.
+    
+    Candidate Submission & Assessment
+    Submit Candidate:
+    Access the candidate submission form at /submit to provide detailed candidate data. Upon submission, the candidate is automatically scored based on the selected visa category.
+    
+    View Candidates:
+    Navigate to /candidates to see the list of candidates. Filtering by assessment status is available.
+    
+    Candidate Detail & Comparison:
+    View detailed candidate profiles at /candidate/<candidate_id>.
+    Compare multiple candidates at /compare.
+    
+    File Uploads & Petition Management
+    
+    Uploading Files:
+    Use the /petition route to upload additional files (e.g., exhibits, resumes, financial proofs) into the candidate’s folder.
+    
+    Renaming Files:
+    Utilize the API endpoint /api/candidate/<candidate_id>/rename_file to rename candidate files.
+    
+    Download Petition PDF:
+    Generate and download a petition PDF at /candidate/<candidate_id>/pdf.
+    
+    Reports & Analysis
+    
+    Dashboard:
+    The /reports route provides various statistics and charts including experience distribution, education counts, top companies, and more.
+    
+    Candidate Analysis:
+    Use /candidate_analysis to get a detailed report listing strengths, weaknesses, and recommendations for each candidate.
+    
+    API Endpoints
+    File Operations:
+    GET /api/candidate/<candidate_id>/files – Retrieve files by folder type.
+    POST /api/candidate/<candidate_id>/rename_file – Rename a candidate file.
+    
+    Petition Details:
+    POST/GET /api/candidate/<candidate_id>/petition_details – Save or retrieve petition details.
+    
+    AI Content Generation:
+    POST /api/genai/generate – Generate custom content (e.g., cover letters) using the Deepseek API.
+    POST /api/get_example – Retrieve example prompts for content generation.
 
 
 ## Project Structure
