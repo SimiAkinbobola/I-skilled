@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}{{ candidate.full_name }}'s Report{% endblock %}
+{% block header %}{{ candidate.full_name }}'s Dashboard Report{% endblock %}
+
+{% block content %}
+<div class="candidate-dashboard">
+  <!-- Dashboard Cards -->
+  <div class="card-container">
+    <div class="card" style="background-color: #4CAF50;">
+      <h3>Overall Score</h3>
+      <p>{{ candidate.score }}</p>
+    </div>
+    <div class="card" style="background-color: #2196F3;">
+      <h3>Experience</h3>
+      <p>{{ candidate.work_experience }} yrs</p>
+    </div>
+    <div class="card" style="background-color: #FF9800;">
+      <h3>Recommendation</h3>
+      <p>
+        {% if candidate.score >= 80 %}
+          <strong>Highly Recommended</strong>
+        {% else %}
+          Further Review Needed
+        {% endif %}
+      </p>
+    </div>
+    <div class="card" style="background-color: #f44336;">
+      <h3>Education</h3>
+      <p>{{ candidate.education_highest[0] }}</p>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="chart-container">
+    <canvas id="dashboardChart"></canvas>
+  </div>
+  
+  <!-- Download PDF Link -->
+  <div class="download-section">
+    <a class="pdf-download" href="{{ url_for('candidate_pdf', candidate_id=candidate.id) }}">
+      Download Report as PDF
+    </a>
+  </div>
+
+  <!-- Candidate Info Section -->
+  <div class="container candidate-info my-5">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="mb-4 text-center">Candidate Details</h2>
+      </div>
+
+      <!-- Personal Information -->
+      <div class="col-lg-6">
+        <h4 class="mb-3">Personal Information</h4>
+        <ul class="list-group mb-4">
+          <li class="list-group-item"><strong>Full Name:</strong> {{ candidate.full_name }}</li>
+          <li class="list-group-item"><strong>Date of Birth:</strong> {{ candidate.dob }}</li>
+          <li class="list-group-item"><strong>Nationality:</strong> {{ candidate.nationality }}</li>
+          <li class="list-group-item"><strong>Country of Residence:</strong> {{ candidate.country_residence }}</li>
+          <li class="list-group-item"><strong>Passport Number:</strong> {{ candidate.passport_number }}</li>
+          <li class="list-group-item"><strong>Issuing Country:</strong> {{ candidate.passport_country }}</li>
+          <li class="list-group-item"><strong>Passport Expiry:</strong> {{ candidate.passport_expiry }}</li>
+          <li class="list-group-item"><strong>Marital Status:</strong> {{ candidate.marital_status }}</li>
+          <li class="list-group-item"><strong>Dependents:</strong> {{ candidate.dependents }}</li>
+        </ul>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="col-lg-6">
+        <h4 class="mb-3">Contact Information</h4>
+        <ul class="list-group mb-4">
+          <li class="list-group-item"><strong>Email:</strong> <a href="mailto:{{ candidate.email }}">{{ candidate.email }}</a></li>
+          <li class="list-group-item"><strong>Phone:</strong> <a href="tel:{{ candidate.phone }}">{{ candidate.phone }}</a></li>
+          <li class="list-group-item"><strong>Mailing Address:</strong> {{ candidate.mailing_address }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Professional Details -->
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mt-4">Professional Details</h4>
+        <ul class="list-group mb-4">
+          <li class="list-group-item"><strong>University:</strong> {{ candidate.education_university[0] }} 
+            {% if candidate.education_graduation_dates[0] %} ({{ candidate.education_graduation_dates[0] }}){% endif %}
+          </li>
+          <li class="list-group-item"><strong>Highest Degree:</strong> {{ candidate.education_highest[0] }}</li>
+          <li class="list-group-item"><strong>Field of Study:</strong> {{ candidate.education_field[0] }}</li>
+          <li class="list-group-item"><strong>Certifications:</strong> {{ candidate.education_certifications | join(', ') }}</li>
+          <li class="list-group-item"><strong>Skills:</strong> {{ candidate.technical_skills }}</li>
+          <li class="list-group-item"><strong>Professional Memberships:</strong> {{ candidate.professional_memberships | join(', ') }}</li>
+          <li class="list-group-item"><strong>Core Competencies:</strong> {{ candidate.core_competencies }}</li>
+          <li class="list-group-item"><strong>Visa Category:</strong> {{ candidate.visa_category }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Work Experience Section -->
+    {% if candidate.experience_employer and candidate.experience_employer|length > 0 %}
+    <div class="container candidate-experience my-5">
+      <h2 class="mb-4 text-center">Work Experience</h2>
+      {% for i in range(candidate.experience_employer|length) %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Employer: {{ candidate.experience_employer[i] }}</h5>
+          <p><strong>Location:</strong> {{ candidate.experience_location[i] | default('N/A') }}</p>
+          <p><strong>Job Title:</strong> {{ candidate.experience_title[i] | default('N/A') }}</p>
+          <p><strong>Duration:</strong> {{ candidate.experience_duration[i] | default('N/A') }}</p>
+          <p><strong>Industry:</strong> {{ candidate.experience_industry[i] | default('N/A') }}</p>
+          <p><strong>Responsibilities:</strong> {{ candidate.experience_responsibilities[i] | default('N/A') }}</p>
+          <p><strong>Accomplishments:</strong> {{ candidate.experience_accomplishments[i] | default('N/A') }}</p>
+          <p><strong>Skills Gained:</strong> {{ candidate.experience_skills[i] | default('N/A') }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="container candidate-experience my-5">
+      <h2 class="mb-4 text-center">Work Experience</h2>
+      <p class="text-muted text-center">No work experience data available.</p>
+    </div>
+    {% endif %}
+
+    <!-- Achievements and Awards -->
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mt-4">Achievements and Awards</h4>
+        <ul class="list-group mb-4">
+          <li class="list-group-item"><strong>Awards:</strong> {{ candidate.achievement_award | join(', ') }}</li>
+          <li class="list-group-item"><strong>Original Contributions:</strong> {{ candidate.original_contributions | join('; ') }}</li>
+          <li class="list-group-item"><strong>High Salary Indicator:</strong> {{ 'Yes' if candidate.high_salary else 'No' }}</li>
+          <li class="list-group-item"><strong>Recommendations:</strong> {{ candidate.recommendation_letters | join(', ') }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Projects and Contributions -->
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mt-4">Projects and Contributions</h4>
+        {% if candidate.project_name and candidate.project_name|length > 0 %}
+        <ul class="list-group mb-4">
+          {% for i in range(candidate.project_name|length) %}
+          <li class="list-group-item">
+            <strong>Project Name:</strong> {{ candidate.project_name[i] }}<br>
+            <strong>Scope:</strong> {{ candidate.project_scope[i] }}<br>
+            <strong>Impact:</strong> {{ candidate.project_impact[i] }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Additional Insights -->
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mt-4">Additional Insights</h4>
+        <p><strong>Contribution to National Interest:</strong> {{ candidate.contribution_national_interest | join('; ') }}</p>
+        <p><strong>Job Creation:</strong> {{ candidate.contribution_job_creation | join('; ') }}</p>
+        <p><strong>Economic Contributions:</strong> {{ candidate.contribution_economy | join('; ') }}</p>
+        {% if candidate.cv_file %}
+        <p>
+          <strong>Uploaded CV:</strong> 
+          <a href="{{ url_for('static', filename=candidate.cv_file.split('/')[-1]) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+            View File
+          </a>
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    // Create a sample bar chart that compares candidate's score and experience.
+    var ctx = document.getElementById('dashboardChart').getContext('2d');
+    var dashboardChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Score', 'Experience (yrs)'],
+        datasets: [{
+          label: 'Metrics',
+          data: [{{ candidate.score }}, {{ candidate.work_experience }}],
+          backgroundColor: [
+            'rgba(76, 175, 80, 0.6)',
+            'rgba(33, 150, 243, 0.6)'
+          ],
+          borderColor: [
+            'rgba(76, 175, 80, 1)',
+            'rgba(33, 150, 243, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom'
+          },
+          title: {
+            display: true,
+            text: 'Candidate Metrics'
+          }
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

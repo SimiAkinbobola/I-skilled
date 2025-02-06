@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate Analysis{% endblock %}
+{% block header %}Candidate Strength Analysis{% endblock %}
+
+{% block content %}
+<div class="candidate-analysis-page">
+  <!-- Form Section -->
+  <form id="analysis-form" class="candidate-analysis-form">
+    <label for="candidate-select">Select Candidate:</label>
+    <select id="candidate-select" class="candidate-analysis-select select2">
+      {% for candidate in candidates %}
+        <option value="{{ candidate.id }}">{{ candidate.full_name }}</option>
+      {% endfor %}
+    </select>
+    <button type="button" id="evaluate-btn" class="candidate-analysis-button">Evaluate</button>
+  </form>
+
+  <!-- Results Section -->
+  <div id="results" class="candidate-analysis-results" style="display: none;">
+    <h3>Analysis Results for <span id="candidate-name"></span></h3>
+    <div class="candidate-analysis-score-card">
+      <h4>Overall Score: <span id="candidate-score"></span></h4>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="candidate-analysis-charts">
+      <div class="candidate-analysis-chart-container">
+        <canvas id="strengthsChart"></canvas>
+      </div>
+      <div class="candidate-analysis-chart-container">
+        <canvas id="weaknessesChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Strengths Section -->
+    <div class="candidate-analysis-details">
+      <h4>Strengths</h4>
+      <ul id="strengths-list" class="candidate-analysis-list"></ul>
+    </div>
+
+    <!-- Weaknesses Section -->
+    <div class="candidate-analysis-details">
+      <h4>Weaknesses</h4>
+      <ul id="weaknesses-list" class="candidate-analysis-list"></ul>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="candidate-analysis-recommendations">
+      <h4>Recommendations</h4>
+      <ul id="recommendations-list"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Include dependencies -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Select2
+    $('.select2').select2();
+
+    // Handle Evaluate button click
+    document.getElementById("evaluate-btn").addEventListener("click", function () {
+      const candidateId = document.getElementById("candidate-select").value;
+      if (!candidateId) {
+        alert("Please select a candidate.");
+        return;
+      }
+      // Clear existing results before making the request
+      clearResults();
+
+      fetch('/candidate_analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidate_id: candidateId })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => displayResults(data))
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again later.");
+      });
+    });
+
+    function clearResults() {
+      document.getElementById("results").style.display = "none";
+      document.getElementById("candidate-name").textContent = "";
+      document.getElementById("candidate-score").textContent = "";
+      clearList("strengths-list");
+      clearList("weaknesses-list");
+      clearList("recommendations-list");
+      if (window.strengthsChart && typeof window.strengthsChart.destroy === "function") {
+        window.strengthsChart.destroy();
+      }
+      if (window.weaknessesChart && typeof window.weaknessesChart.destroy === "function") {
+        window.weaknessesChart.destroy();
+      }
+    }
+
+    function clearList(listId) {
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+    }
+
+    function displayResults(data) {
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      document.getElementById("results").style.display = "block";
+      document.getElementById("candidate-name").textContent = data.candidate_name;
+      document.getElementById("candidate-score").textContent = data.score;
+      populateList("strengths-list", data.strengths);
+      populateList("weaknesses-list", data.weaknesses, true);
+      populateList("recommendations-list", data.recommendations);
+      window.strengthsChart = renderChart("strengthsChart", "Strengths", data.strengths.length);
+      window.weaknessesChart = renderChart("weaknessesChart", "Weaknesses", data.weaknesses.length);
+    }
+
+    function populateList(listId, items, isWeakness = false) {
+      const list = document.getElementById(listId);
+      list.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.className = `candidate-analysis-list-item ${isWeakness ? 'weakness' : ''}`;
+        li.textContent = item;
+        list.appendChild(li);
+      });
+    }
+
+    function renderChart(canvasId, label, value) {
+      const otherValue = Math.max(10 - value, 0);
+      const ctx = document.getElementById(canvasId).getContext("2d");
+      return new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: [label, "Other"],
+          datasets: [{
+            data: [value, otherValue],
+            backgroundColor: ["#4CAF50", "#f44336"]
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+  });
+</script>
+{% endblock %}

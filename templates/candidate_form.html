@@ -1,0 +1,759 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Profile{% endblock %}
+{% block header %}Submit Your Detailed Profile{% endblock %}
+
+{% block content %}
+<h2>Candidate Profile Submission</h2>
+<form method="POST" action="{{ url_for('candidate_form') }}" enctype="multipart/form-data">
+  
+  <!-- 1. Personal Information -->
+  <fieldset>
+    <legend>Personal Information</legend>
+    <div class="form-columns">
+      <div class="column">
+        <label for="full_name">Full Name:</label>
+        <input type="text" name="full_name" id="full_name" required>
+        
+        <label for="dob">Date of Birth:</label>
+        <input type="date" name="dob" id="dob" required>
+        
+        <label for="nationality">Nationality/Country of Citizenship:</label>
+        <input type="text" name="nationality" id="nationality" required>
+        
+        <label for="country_residence">Country of Residence:</label>
+        <input type="text" name="country_residence" id="country_residence" required>
+      </div>
+      <div class="column">
+        
+        <label for="passport_country">Passport Issuing Country:</label>
+        <input type="text" name="passport_country" id="passport_country" required>
+        
+        <label for="passport_expiry">Passport Expiry Date:</label>
+        <input type="date" name="passport_expiry" id="passport_expiry" required>
+        
+        <label for="marital_status">Marital Status:</label>
+        <select name="marital_status" id="marital_status" required>
+          <option value="">Select</option>
+          <option value="Single">Single</option>
+          <option value="Married">Married</option>
+          <option value="Divorced">Divorced</option>
+          <option value="Widowed">Widowed</option>
+        </select>
+        
+        <label for="dependents">Dependents (Spouse and Children):</label>
+        <input type="number" name="dependents" id="dependents" min="0" value="0">
+      </div>
+    </div>
+  </fieldset>
+  
+  <!-- 2. Contact Information -->
+  <fieldset>
+    <legend>Contact Information</legend>
+    <div class="form-columns">
+      <div class="column">
+        <label for="email">Email Address:</label>
+        <input type="email" name="email" id="email" required>
+        
+        <label for="phone">Phone Number:</label>
+        <input type="text" name="phone" id="phone" required>
+      </div>
+      <div class="column">
+        <label for="mailing_address">Mailing Address:</label>
+        <textarea name="mailing_address" id="mailing_address" placeholder="Enter mailing address..."></textarea>
+      </div>
+    </div>
+  </fieldset>
+  
+  <!-- 3. Educational Background -->
+  <fieldset>
+    <legend>Educational Background</legend>
+    <div id="education_container">
+      <div class="education_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Highest Degree Achieved:</label>
+            <input type="text" name="education_highest[]" placeholder="e.g., any of Doctoral, Master, Bachelor, HND">
+            
+            <label>Field of Study:</label>
+            <input type="text" name="education_field[]" placeholder="e.g., Computer Science">
+            
+            <label>University/College/Polytechnic:</label>
+            <input type="text" name="education_university[]" placeholder="e.g., Stanford University">
+            
+            <label>Country:</label>
+            <input type="text" name="education_country[]" placeholder="e.g., USA">
+            
+            <label>Attendance Dates (yyyy-yyyy):</label>
+            <input type="text" name="education_graduation_dates[]" placeholder="e.g., 2015-2019">
+          </div>
+          <div class="column">
+            <label>Academic Honors or Distinctions:</label>
+            <input type="text" name="education_honors[]" placeholder="e.g., Magna Cum Laude, First Class">
+            
+            <label>Certificates Related to Specialization:</label>
+            <input type="text" name="education_certifications[]" placeholder="e.g., Data Science Certificate">
+            
+            <label>Publications Resulting from Academic Work:</label>
+            <textarea name="education_publications[]" placeholder="List publications..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-education">Remove Education</button>
+      </div>
+    </div>
+    <button type="button" id="add_education">Add Education</button>
+  </fieldset>
+  
+  <!-- 4. Work Experience -->
+  <fieldset>
+    <legend>Work Experience</legend>
+    <div id="experience_container">
+      <div class="experience_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Employer Name:</label>
+            <input type="text" name="experience_employer[]" placeholder="e.g., Google">
+            
+            <label>Location:</label>
+            <input type="text" name="experience_location[]" placeholder="e.g., Mountain View, CA">
+            
+            <label>Job Title:</label>
+            <input type="text" name="experience_title[]" placeholder="e.g., Software Engineer">
+            
+            <label>Duration (yyyy-yyyy format only):</label>
+            <input type="text" name="experience_duration[]" placeholder="e.g., Jan 2018 - Present">
+
+            <label>Number of Years (numbers only, no months):</label>
+            <input type="text" name="work_experience[]" placeholder="e.g., 0.5 or 1">
+          </div>
+          <div class="column">
+            <label>Industry/Sector:</label>
+            <input type="text" name="experience_industry[]" placeholder="e.g., Technology">
+            
+            <label>Job Responsibilities:</label>
+            <textarea name="experience_responsibilities[]" placeholder="Describe your responsibilities..."></textarea>
+            
+            <label>Accomplishments and Contributions:</label>
+            <textarea name="experience_accomplishments[]" placeholder="List your accomplishments..."></textarea>
+            
+            <label>Skills/Expertise:</label>
+            <input type="text" name="experience_skills[]" placeholder="e.g., Python, Project Management">
+          </div>
+        </div>
+        <button type="button" class="remove-experience">Remove Experience</button>
+      </div>
+    </div>
+    <button type="button" id="add_experience">Add Work Experience</button>
+  </fieldset>
+  
+  <!-- 5. Achievements and Recognitions -->
+  <fieldset>
+    <legend>Achievements and Recognitions</legend>
+    <div id="achievements_container">
+      <div class="achievement_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Award or Honor:</label>
+            <input type="text" name="achievement_award[]" placeholder="e.g., Employee of the Year">
+            
+            <label>Professional Membership or Association:</label>
+            <input type="text" name="achievement_membership[]" placeholder="e.g., IEEE Member">
+            
+            <label>Patents, Innovations, or Inventions:</label>
+            <input type="text" name="achievement_patents[]" placeholder="e.g., Inventor of XYZ">
+            
+            <label>Leadership Positions:</label>
+            <input type="text" name="achievement_leadership[]" placeholder="e.g., Team Lead">
+          </div>
+          <div class="column">
+            <label>Research Contributions or Discoveries:</label>
+            <textarea name="achievement_research[]" placeholder="Describe your research..."></textarea>
+            
+            <label>Public Speaking or Keynotes:</label>
+            <textarea name="achievement_speaking[]" placeholder="List your speaking engagements..."></textarea>
+            
+            <label>Community Contributions:</label>
+            <textarea name="achievement_community[]" placeholder="Describe community contributions..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-achievement">Remove Achievement</button>
+      </div>
+    </div>
+    <button type="button" id="add_achievement">Add Achievement</button>
+  </fieldset>
+  
+  <!-- 6. Publications and Media -->
+  <fieldset>
+    <legend>Publications and Media</legend>
+    <div id="publications_container">
+      <div class="publication_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Published Title:</label>
+            <input type="text" name="publication_title[]" placeholder="Title">
+            
+            <label>Type:</label>
+            <select name="publication_type[]">
+              <option value="">Select</option>
+              <option value="Paper">Paper</option>
+              <option value="Book">Book</option>
+              <option value="Article">Article</option>
+              <option value="Other">Other</option>
+            </select>
+            
+            <label>Journal/Publisher:</label>
+            <input type="text" name="publication_publisher[]" placeholder="e.g., Nature">
+            
+            <label>Publication Date:</label>
+            <input type="date" name="publication_date[]">
+          </div>
+          <div class="column">
+            <label>Media Coverage:</label>
+            <textarea name="publication_media[]" placeholder="List media coverage..."></textarea>
+            
+            <label>Presentations or Conferences:</label>
+            <textarea name="publication_presentations[]" placeholder="List presentations..."></textarea>
+            
+            <label>Citation Metrics (h-index, etc.):</label>
+            <input type="text" name="publication_citations[]" placeholder="e.g., h-index: 15">
+          </div>
+        </div>
+        <button type="button" class="remove-publication">Remove Publication</button>
+      </div>
+    </div>
+    <button type="button" id="add_publication">Add Publication</button>
+  </fieldset>
+  
+  <!-- 7. Professional Licenses and Certifications -->
+  <fieldset>
+    <legend>Professional Licenses and Certifications</legend>
+    <div id="licenses_container">
+      <div class="license_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>License/Certification Name:</label>
+            <input type="text" name="license_name[]" placeholder="e.g., PMP">
+            
+            <label>Issuing Authority:</label>
+            <input type="text" name="license_authority[]" placeholder="e.g., PMI">
+            
+            <label>Validity Period:</label>
+            <input type="text" name="license_validity[]" placeholder="e.g., 2020-2025">
+          </div>
+          <div class="column">
+            <label>Certification Number:</label>
+            <input type="text" name="license_number[]" placeholder="e.g., 12345">
+            
+            <label>Additional Details:</label>
+            <textarea name="license_details[]" placeholder="Any additional information..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-license">Remove License/Certification</button>
+      </div>
+    </div>
+    <button type="button" id="add_license">Add License/Certification</button>
+  </fieldset>
+  
+  <!-- 8. Evidence of Extraordinary Ability (for EB1A) -->
+  <fieldset>
+    <legend>Evidence of Extraordinary Ability (EB1A)</legend>
+    <div id="extra_ability_container">
+      <div class="extra_ability_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Original Contributions:</label>
+            <textarea name="extra_contributions[]" placeholder="Describe original contributions..."></textarea>
+            
+            <label>Membership in Exclusive Organizations:</label>
+            <input type="text" name="extra_memberships[]" placeholder="e.g., Nobel Prize Committee">
+          </div>
+          <div class="column">
+            <label>High Salary Indicator (Yes/No):</label>
+            <input type="checkbox" name="high_salary" value="yes">
+            
+            <label>Critical Roles (e.g., Team Lead):</label>
+            <textarea name="extra_roles[]" placeholder="Describe critical roles..."></textarea>
+            
+            <label>Judging Experience (Yes/No):</label>
+            <input type="checkbox" name="judging_experience" value="yes">
+            
+            <label>Evidence of Commercial Success:</label>
+            <textarea name="extra_commercial[]" placeholder="Describe commercial successes..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-extra-ability">Remove Evidence</button>
+      </div>
+    </div>
+    <button type="button" id="add_extra_ability">Add Evidence of Extraordinary Ability</button>
+  </fieldset>
+  
+  <!-- 9. Special Projects and Contributions -->
+  <fieldset>
+    <legend>Special Projects and Contributions</legend>
+    <div id="projects_container">
+      <div class="project_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Project Name:</label>
+            <input type="text" name="project_name[]" placeholder="e.g., Project X">
+            
+            <label>Scope:</label>
+            <select name="project_scope[]">
+              <option value="">Select</option>
+              <option value="National">National</option>
+              <option value="International">International</option>
+            </select>
+            
+            <label>Impact/Significance:</label>
+            <textarea name="project_impact[]" placeholder="Describe the impact..."></textarea>
+          </div>
+          <div class="column">
+            <label>Organizational Changes:</label>
+            <textarea name="project_changes[]" placeholder="Describe changes..."></textarea>
+            
+            <label>Problem Solutions:</label>
+            <textarea name="project_solutions[]" placeholder="Describe solutions..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-project">Remove Project</button>
+      </div>
+    </div>
+    <button type="button" id="add_project">Add Special Project</button>
+  </fieldset>
+  
+  <!-- 10. Language Proficiency -->
+  <fieldset>
+    <legend>Language Proficiency</legend>
+    <div id="languages_container">
+      <div class="language_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Language:</label>
+            <input type="text" name="language[]" placeholder="e.g., English">
+            
+            <label>Proficiency Level:</label>
+            <select name="language_proficiency[]">
+              <option value="">Select</option>
+              <option value="Basic">Basic</option>
+              <option value="Conversational">Conversational</option>
+              <option value="Fluent">Fluent</option>
+              <option value="Native">Native</option>
+            </select>
+          </div>
+          <div class="column">
+            <label>Certifications (e.g., TOEFL):</label>
+            <input type="text" name="language_certifications[]" placeholder="e.g., TOEFL 110">
+          </div>
+        </div>
+        <button type="button" class="remove-language">Remove Language</button>
+      </div>
+    </div>
+    <button type="button" id="add_language">Add Language</button>
+  </fieldset>
+  
+  <!-- 11. Immigration History -->
+  <fieldset>
+    <legend>Immigration History</legend>
+    <div id="immigration_container">
+      <div class="immigration_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Visa Status (List Current or Previous):</label>
+            <input type="text" name="immigration_current_status[]" placeholder="e.g., H-1B">
+            
+            <label>Visa Application Decision:</label>
+            <textarea name="immigration_previous_applications[]" placeholder="Approved or Denied..."></textarea>
+          </div>
+          <div class="column">
+            <label>Immigration Intentions:</label>
+            <select name="immigration_intentions[]">
+              <option value="">Select</option>
+              <option value="Temporary">Temporary</option>
+              <option value="Permanent">Permanent</option>
+            </select>
+            
+            <label>Relocation Preferences:</label>
+            <input type="text" name="immigration_relocation_preferences[]" placeholder="e.g., Prefer urban areas">
+          </div>
+        </div>
+        <button type="button" class="remove-immigration">Remove Immigration History</button>
+      </div>
+    </div>
+    <button type="button" id="add_immigration">Add Immigration History</button>
+  </fieldset>
+  
+  <!-- 12. Skills and Technical Expertise -->
+  <fieldset>
+    <legend>Skills and Technical Expertise</legend>
+    <div class="form-columns">
+      <div class="column">
+        <label for="core_competencies">Core Competencies:</label>
+        <input type="text" name="core_competencies" id="core_competencies" placeholder="e.g., Data Analysis, Financial Modeling">
+        
+        <label for="technical_skills">Technical Skills:</label>
+        <input type="text" name="technical_skills" id="technical_skills" placeholder="e.g., Excel, Python">
+      </div>
+      <div class="column">
+        <label for="cross_disciplines">Cross-Disciplinary Knowledge:</label>
+        <textarea name="cross_disciplines" id="cross_disciplines" placeholder="e.g., Combining data science with healthcare"></textarea>
+      </div>
+    </div>
+  </fieldset>
+  
+  <!-- 13. Contributions to the U.S. Economy and Society (EB2 NIW Specific) -->
+  <fieldset>
+    <legend>Contributions to the U.S. Economy and Society (EB2 NIW Specific)</legend>
+    <div id="contributions_container">
+      <div class="contribution_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Benefit to U.S. National Interest:</label>
+            <textarea name="contribution_national_interest[]" placeholder="Describe how your work benefits the U.S."></textarea>
+            
+            <label>Job Creation Potential:</label>
+            <textarea name="contribution_job_creation[]" placeholder="Describe job creation potential..."></textarea>
+          </div>
+          <div class="column">
+            <label>Economic Contributions:</label>
+            <textarea name="contribution_economy[]" placeholder="e.g., Revenue growth, cost savings..."></textarea>
+            
+            <label>Technological or Scientific Advancements:</label>
+            <textarea name="contribution_advancements[]" placeholder="Describe advancements..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-contribution">Remove Contribution</button>
+      </div>
+    </div>
+    <button type="button" id="add_contribution">Add Contribution</button>
+  </fieldset>
+  
+  <!-- 14. Employment Offer Details (for EB2 and EB3) -->
+  <fieldset>
+    <legend>Employment Offer Details (For EB2 and EB3)</legend>
+    <div id="employment_offer_container">
+      <div class="employment_offer_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Employer Name:</label>
+            <input type="text" name="employment_offer_employer[]" placeholder="e.g., ABC Corp">
+            
+            <label>Employer Details:</label>
+            <textarea name="employment_offer_details[]" placeholder="Describe the employer..."></textarea>
+            
+            <label>Job Title:</label>
+            <input type="text" name="employment_offer_title[]" placeholder="e.g., Senior Developer">
+          </div>
+          <div class="column">
+            <label>Job Description:</label>
+            <textarea name="employment_offer_description[]" placeholder="Describe the job..."></textarea>
+            
+            <label>Labor Certification Information:</label>
+            <input type="text" name="employment_offer_labor_cert[]" placeholder="e.g., Labor Cert Number">
+            
+            <label>Salary Offered:</label>
+            <input type="number" name="employment_offer_salary[]" placeholder="e.g., 90000" min="0">
+          </div>
+        </div>
+        <button type="button" class="remove-employment-offer">Remove Employment Offer</button>
+      </div>
+    </div>
+    <button type="button" id="add_employment_offer">Add Employment Offer</button>
+  </fieldset>
+  
+  <!-- 15. References -->
+  <fieldset>
+    <legend>References (List 5 or 6)</legend>
+    <div id="references_container">
+      <div class="reference_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Referee Name:</label>
+            <input type="text" name="reference_name[]" placeholder="e.g., Dr. Jane Smith">
+            
+            <label>Title:</label>
+            <input type="text" name="reference_title[]" placeholder="e.g., Professor">
+            
+            <label>Contact Information:</label>
+            <input type="text" name="reference_contact[]" placeholder="e.g., jane.smith@university.edu">
+          </div>
+          <div class="column">
+            <label>Relationship:</label>
+            <input type="text" name="reference_relationship[]" placeholder="e.g., Former Supervisor">
+          </div>
+        </div>
+        <button type="button" class="remove-reference">Remove Reference</button>
+      </div>
+    </div>
+    <button type="button" id="add_reference">Add Reference</button>
+  </fieldset>
+  
+  <!-- 16. Financial Information -->
+  <fieldset>
+    <legend>Financial Information</legend>
+    <div class="form-columns">
+      <div class="column">
+        <label for="financial_support">Ability to Support Self/Dependents:</label>
+        <textarea name="financial_support" id="financial_support" placeholder="Describe financial support..."></textarea>
+        
+        <label for="financial_proof">Proof of Income or Assets:</label>
+        <input type="file" name="financial_proof" id="financial_proof" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple>
+      </div>
+      <div class="column">
+        <label for="financial_assets">Assets:</label>
+        <input type="text" name="financial_assets" id="financial_assets" placeholder="e.g., Bank Statements, Investments">
+      </div>
+    </div>
+  </fieldset>
+  
+  <!-- 17. Future Goals -->
+  <fieldset>
+    <legend>Future Goals</legend>
+    <div id="future_goals_container">
+      <div class="future_goal_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Short-Term Goals:</label>
+            <textarea name="future_short_term[]" placeholder="Describe short-term goals..."></textarea>
+            
+            <label>Long-Term Goals:</label>
+            <textarea name="future_long_term[]" placeholder="Describe long-term goals..."></textarea>
+          </div>
+          <div class="column">
+            <label>Vision for Contribution in the U.S.:</label>
+            <textarea name="future_contribution[]" placeholder="Describe your vision..."></textarea>
+          </div>
+        </div>
+        <button type="button" class="remove-future-goal">Remove Future Goal</button>
+      </div>
+    </div>
+    <button type="button" id="add_future_goal">Add Future Goal</button>
+  </fieldset>
+  
+  <!-- 18. Uploads (Documents to Collect) -->
+  <fieldset>
+    <legend>Uploads (Documents to Collect)</legend>
+    <div id="uploads_container">
+      <div class="upload_entry">
+        <div class="form-columns">
+          <div class="column">
+            <label>Document Type:</label>
+            <select name="upload_type[]">
+              <option value="">Select</option>
+              <option value="Resume/CV">Resume/CV</option>
+              <option value="Diploma/Degree">Diploma/Degree</option>
+              <option value="Employment Letter">Employment Letter</option>
+              <option value="Award/Certificate">Award/Certificate</option>
+              <option value="Publication">Publication</option>
+              <option value="Membership Proof">Membership Proof</option>
+              <option value="Recommendation Letter">Recommendation Letter</option>
+              <option value="Work Portfolio">Work Portfolio</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="column">
+            <label>Upload File:</label>
+            <input type="file" name="upload_file[]" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+          </div>
+        </div>
+        <button type="button" class="remove-upload">Remove Upload</button>
+      </div>
+    </div>
+    <button type="button" id="add_upload">Add Upload</button>
+  </fieldset>
+  
+  <!-- 19. Visa Category and Job Offer -->
+  <fieldset>
+    <legend>Visa Details</legend>
+    <div class="form-columns">
+      <div class="column">
+        <label for="visa_category">Visa Category:</label>
+        <select name="visa_category" id="visa_category" required>
+          <option value="">Select</option>
+          <option value="EB1A">EB1A (Extraordinary Ability)</option>
+          <option value="EB2_NIW">EB2 NIW (National Interest Waiver)</option>
+          <option value="EB2">EB2 (Advanced Degree or Exceptional Ability)</option>
+          <option value="EB3">EB3 (Skilled Worker, Professional, or Other Worker)</option>
+        </select>
+      </div>
+      <div class="column">
+        <label for="job_offer">Job Offer (for EB3 only):</label>
+        <input type="text" name="job_offer" id="job_offer" placeholder="e.g., Marketing Director at XYZ">
+      </div>
+    </div>
+  </fieldset>
+  
+  <button type="submit">Submit Profile</button>
+</form>
+
+<!-- Inline JavaScript for Dynamic Add/Remove Functionality -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Function to clone and clear inputs
+  function cloneAndClear(containerId, entryClass) {
+    const container = document.getElementById(containerId);
+    const clone = container.firstElementChild.cloneNode(true);
+    clone.querySelectorAll("input, textarea, select").forEach(function (input) {
+      if (input.type !== 'file') {
+        input.value = "";
+        if(input.type === 'checkbox') {
+          input.checked = false;
+        }
+      } else {
+        input.value = null;
+      }
+    });
+    container.appendChild(clone);
+  }
+
+  // Function to remove entry
+  function removeEntry(e, containerId, minEntries) {
+    const container = document.getElementById(containerId);
+    if (container.children.length > minEntries) {
+      e.target.parentElement.remove();
+    } else {
+      alert(`At least ${minEntries} entry is required.`);
+    }
+  }
+
+  // Education
+  document.getElementById("add_education").addEventListener("click", function () {
+    cloneAndClear("education_container", "education_entry");
+  });
+  document.getElementById("education_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-education")) {
+      removeEntry(e, "education_container", 1);
+    }
+  });
+
+  // Work Experience
+  document.getElementById("add_experience").addEventListener("click", function () {
+    cloneAndClear("experience_container", "experience_entry");
+  });
+  document.getElementById("experience_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-experience")) {
+      removeEntry(e, "experience_container", 1);
+    }
+  });
+
+  // Achievements
+  document.getElementById("add_achievement").addEventListener("click", function () {
+    cloneAndClear("achievements_container", "achievement_entry");
+  });
+  document.getElementById("achievements_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-achievement")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Publications
+  document.getElementById("add_publication").addEventListener("click", function () {
+    cloneAndClear("publications_container", "publication_entry");
+  });
+  document.getElementById("publications_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-publication")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Licenses and Certifications
+  document.getElementById("add_license").addEventListener("click", function () {
+    cloneAndClear("licenses_container", "license_entry");
+  });
+  document.getElementById("licenses_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-license")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Evidence of Extraordinary Ability
+  document.getElementById("add_extra_ability").addEventListener("click", function () {
+    cloneAndClear("extra_ability_container", "extra_ability_entry");
+  });
+  document.getElementById("extra_ability_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-extra-ability")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Special Projects
+  document.getElementById("add_project").addEventListener("click", function () {
+    cloneAndClear("projects_container", "project_entry");
+  });
+  document.getElementById("projects_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-project")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Language Proficiency
+  document.getElementById("add_language").addEventListener("click", function () {
+    cloneAndClear("languages_container", "language_entry");
+  });
+  document.getElementById("languages_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-language")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Immigration History
+  document.getElementById("add_immigration").addEventListener("click", function () {
+    cloneAndClear("immigration_container", "immigration_entry");
+  });
+  document.getElementById("immigration_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-immigration")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Contributions (U.S. Economy and Society)
+  document.getElementById("add_contribution").addEventListener("click", function () {
+    cloneAndClear("contributions_container", "contribution_entry");
+  });
+  document.getElementById("contributions_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-contribution")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Employment Offer Details
+  document.getElementById("add_employment_offer").addEventListener("click", function () {
+    cloneAndClear("employment_offer_container", "employment_offer_entry");
+  });
+  document.getElementById("employment_offer_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-employment-offer")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // References
+  document.getElementById("add_reference").addEventListener("click", function () {
+    cloneAndClear("references_container", "reference_entry");
+  });
+  document.getElementById("references_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-reference")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Future Goals
+  document.getElementById("add_future_goal").addEventListener("click", function () {
+    cloneAndClear("future_goals_container", "future_goal_entry");
+  });
+  document.getElementById("future_goals_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-future-goal")) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Uploads
+  document.getElementById("add_upload").addEventListener("click", function () {
+    cloneAndClear("uploads_container", "upload_entry");
+  });
+  document.getElementById("uploads_container").addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("remove-upload")) {
+      e.target.parentElement.remove();
+    }
+  });
+});
+</script>
+{% endblock %}

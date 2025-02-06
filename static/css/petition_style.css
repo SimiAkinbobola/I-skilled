@@ -1,0 +1,813 @@
+/* petition_style.css */
+
+/* ================================================================== */
+/* General Styles for Petition Page */
+/* ================================================================== */
+
+.petition-main-content {
+    background-color: #ffffff !important; /* White background for the main content */
+    border-radius: 8px !important; /* Rounded corners */
+    padding: 15px !important; /* Reduced padding for compactness */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow for depth */
+    margin-top: 15px; /* Slightly reduced top margin */
+}
+
+#petition-top-section {
+    display: flex;
+    gap: 15px; /* Reduced gap between form and existing files */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    align-items: flex-start; /* Align items to the top */
+}
+
+/* ================================================================== */
+/* Combined Form Styling */
+/* ================================================================== */
+
+.petition-combined-form {
+    flex: 1 1 60%; /* Occupies 60% of the row */
+    min-width: 280px; /* Prevent from becoming too narrow */
+    padding: 10px !important; /* Reduced padding within the form */
+}
+
+#petition-top-container {
+    display: flex;
+    gap: 15px; /* Reduced gap between columns */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    width: 100%;
+}
+
+.petition-left-column,
+.petition-folder-column,
+.petition-upload-column {
+    flex: 1 1 28%; /* Each takes up roughly 28% of the container */
+    min-width: 200px; /* Prevent columns from becoming too narrow */
+}
+
+/* Adjusting the upload column to take slightly more space */
+.petition-upload-column {
+    flex: 1 1 35%; /* Slightly wider for file uploads */
+}
+
+/* Labels */
+.petition-left-column .form-label,
+.petition-folder-column .form-label,
+.petition-upload-column .form-label {
+    font-weight: bold;
+    font-size: 0.85rem; /* Smaller font size */
+    margin-bottom: 0.2rem; /* Reduced margin below labels */
+    color: #343a40; /* Dark text for readability */
+}
+
+/* Select and Input Fields */
+.petition-left-column .form-select,
+.petition-folder-column .form-select,
+.petition-upload-column .form-control {
+    font-size: 0.85rem; /* Smaller font size */
+    padding: 0.4rem 0.6rem; /* Reduced padding */
+    border-radius: 4px; /* Slightly smaller border radius */
+    border: 1px solid #ced4da;
+    background-color: #ffffff;
+    color: #343a40; /* Dark text */
+}
+
+/* Helper Text */
+.petition-upload-column .form-text {
+    font-size: 0.75rem; /* Smaller helper text */
+    color: #6c757d;
+}
+
+/* Upload Button */
+.petition-upload-column .btn {
+    font-size: 0.85rem; /* Smaller button text */
+    padding: 0.35rem 0.7rem; /* Reduced padding */
+    border-radius: 4px; /* Slightly smaller border radius */
+    margin-top: 8px; /* Reduced top margin */
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.petition-upload-column .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.petition-upload-column .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* ================================================================== */
+/* Existing Files Section */
+/* ================================================================== */
+
+.petition-right-existing-files {
+    flex: 1 1 35%; /* Occupies 35% of the row */
+    min-width: 250px; /* Prevent it from being too narrow */
+    padding: 10px !important; /* Reduced padding */
+}
+
+#petition-existing-files-section {
+    max-height: 300px; /* Reduced max-height for compactness */
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    padding: 10px; /* Reduced padding */
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+#petition-existing-files-section h5 {
+    font-size: 1rem; /* Smaller heading size */
+    margin-bottom: 8px;
+    color: #343a40;
+}
+
+#petition-existing-files-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#petition-existing-files-list li {
+    padding: 8px; /* Reduced padding */
+    font-size: 0.9rem; /* Smaller font size */
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#petition-existing-files-list li:last-child {
+    border-bottom: none; /* Remove border for the last item */
+}
+
+/* Action Buttons in Existing Files */
+#petition-existing-files-list .btn {
+    padding: 0.25rem 0.5rem; /* Consistent padding */
+    font-size: 0.75rem; /* Consistent font size */
+    border-radius: 3px; /* Rounded corners */
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Space between icon and text */
+}
+
+/* Ensure the flex container aligns buttons on the same row */
+#petition-existing-files-list .d-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px; /* Adjust spacing between buttons */
+}
+
+/* Outline Buttons Styling */
+#petition-existing-files-list .btn-outline-secondary, 
+#petition-existing-files-list .btn-outline-primary {
+    color: #495057;
+    border-color: #ced4da;
+}
+
+#petition-existing-files-list .btn-outline-secondary:hover,
+#petition-existing-files-list .btn-outline-primary:hover {
+    color: #fff;
+    background-color: #495057;
+    border-color: #495057;
+}
+
+/* Download PDF Button */
+#petition-downloadPDFBtn {
+    font-size: 0.95rem !important; /* Slightly smaller font size */
+    padding: 0.4rem 0.8rem !important; /* Reduced padding */
+    border-radius: 5px !important;
+    transition: background-color 0.3s, border-color 0.3s !important; /* Smooth transition */
+}
+
+#petition-downloadPDFBtn:hover {
+    background-color: #5a6268 !important; /* Darker on hover */
+    border-color: #545b62 !important;
+}
+
+/* ================================================================== */
+/* Right Column Styling */
+/* ================================================================== */
+
+.petition-right-column {
+    width: 100%;
+}
+
+.petition-right-column h2,
+.petition-right-column h1 {
+    font-size: 1.5rem !important; /* Slightly smaller heading sizes */
+    color: #343a40 !important; /* Darker text for better readability */
+}
+
+.petition-right-column .btn-info {
+    background-color: #0dcaf0 !important;
+    border-color: #0dcaf0 !important;
+    border-radius: 5px !important; /* Consistent rounded corners */
+    padding: 5px 10px !important; /* Reduced button padding */
+    margin-bottom: 8px !important; /* Reduced bottom margin */
+    font-weight: 500 !important; /* Medium font weight */
+    font-size: 0.8rem !important; /* Slightly smaller font */
+    transition: background-color 0.3s, border-color 0.3s !important; /* Smooth transition */
+}
+
+.petition-right-column .btn-info:hover {
+    background-color: #31d2f2 !important;
+    border-color: #31d2f2 !important;
+}
+
+.petition-right-column #petition-form {
+    padding: 15px !important; /* Reduced padding */
+    margin-top: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.petition-right-column #petition-form .form-label {
+    font-size: 0.85rem !important; /* Smaller labels */
+}
+
+.petition-right-column .quill-editor {
+    height: 450px !important; /* Reduced height for more compactness */
+    background-color: #ffffff !important; /* White background */
+    border-radius: 5px !important; /* Rounded corners */
+    border: 1px solid #ced4da !important; /* Light border */
+}
+
+.petition-right-column .btn-success {
+    font-size: 0.85rem !important; /* Smaller button text */
+    padding: 0.3rem !important; /* Reduced padding */
+    width: 100%; /* Full width button */
+}
+
+/* ================================================================== */
+/* Card Styling */
+/* ================================================================== */
+
+.petition-main-content .card {
+    border-radius: 8px !important; /* Consistent rounded corners */
+    border: 1px solid #e9ecef !important; /* Light border for definition */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important; /* Subtle shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important; /* Smooth hover effect */
+}
+
+.petition-main-content .card:hover {
+    transform: translateY(-2px) !important; /* Slight lift on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important; /* Enhanced shadow on hover */
+}
+
+/* ================================================================== */
+/* Modal Styling */
+/* ================================================================== */
+
+/* General Modal Content */
+.modal-content {
+    background-color: #ffffff !important; /* Light background */
+    color: #343a40 !important; /* Dark text */
+}
+
+/* Specific Modal Headers */
+#petition-coverLetterModal .modal-header,
+#petition-listOfExhibitsModal .modal-header,
+#genaiModal .modal-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #e9ecef !important;
+    padding: 12px 16px !important; /* Reduced padding */
+}
+
+#petition-coverLetterModal .modal-title,
+#petition-listOfExhibitsModal .modal-title,
+#genaiModal .modal-title {
+    font-size: 1.2rem !important; /* Slightly smaller title */
+    font-weight: 600 !important;
+    color: #343a40 !important;
+}
+
+/* Specific Modal Bodies */
+#petition-coverLetterModal .modal-body,
+#petition-listOfExhibitsModal .modal-body,
+#genaiModal .modal-body {
+    padding: 15px !important; /* Reduced padding */
+    color: #343a40; /* Ensure dark text */
+}
+
+/* Quill Editor within Modals */
+#petition-coverLetterModal .quill-editor,
+#genaiModal .quill-editor {
+    background-color: #ffffff !important;
+    color: #343a40 !important;
+}
+
+/* ================================================================== */
+/* GenAI API Modal Specific Styling */
+/* ================================================================== */
+
+/* General Modal Styling */
+#genaiModal .modal-dialog {
+    max-width: 1200px !important;
+    width: 90% !important;
+    max-height: 90vh; /* Limit modal height to viewport */
+    display: flex;
+    flex-direction: column;
+}
+
+#genaiModal .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Modal Header */
+#genaiModal .modal-header {
+    background-color: #e9ecef;
+    padding: 5px 5px;
+    border-bottom: 1px solid #dcdcdc;
+    flex-shrink: 0; /* Ensure header stays fixed */
+}
+
+#genaiModal .modal-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+/* Modal Body */
+#genaiModal .modal-body {
+    padding: 10px;
+    background-color: #f8f9fa;
+    flex-grow: 1; /* Allow body to expand */
+    overflow-y: auto; /* Scrollable body */
+}
+
+/* Labels for Form Fields */
+#genaiModal .form-label {
+    color: #495057;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* Textarea Styling for Proposed Endeavor Summary and Custom Prompt */
+#genaiModal .form-control {
+    border: 1px solid #ced4da;
+    padding: 10px 12px;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+}
+
+/* Adjust textareas for sufficient height */
+#genaiModal textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+/* Dynamic labels for generated fields */
+#genaiModal #additionalFields h6 {
+    font-size: 1rem;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+/* Dynamic buttons */
+#genaiModal .btn-secondary {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+}
+
+#genaiModal .btn-danger {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Button alignment */
+#genaiModal #additionalFields button {
+    margin-top: 8px;
+}
+
+/* Field spacing and margins */
+#genaiModal .mb-3,
+#genaiModal .mb-2 {
+    margin-bottom: 15px;
+}
+
+/* Hover and Focus Effects for Inputs */
+#genaiModal .form-control:hover {
+    border-color: #0d6efd;
+}
+
+#genaiModal .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+/* Modal Footer */
+/* Modal Footer with Thin Colored Outline */
+#genaiModal .modal-footer {
+    border-top: 3px dashed #6c8994; 
+    border-left: 3px solid #6c8994;
+    border-right: 3px solid #6c8994; 
+    border-bottom: 3px solid #6c8994;
+    padding: 12px 16px;
+    flex-shrink: 0; /* Keep footer fixed */
+}
+
+/* Optional: Add slight padding for the outline to stand out */
+#genaiModal .modal-footer {
+    padding-top: 16px;
+}
+
+
+
+/* Dynamic Content Display (textarea, output) */
+#genaiModal #genaiExample,
+#genaiModal #genaiOutput {
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+/* General button styling */
+#genaiModal .modal-footer .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Secondary Button (Close) */
+#genaiModal .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #ffffff;
+}
+
+#genaiModal .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Primary Button (Generate) */
+#genaiModal .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #ffffff;
+}
+
+#genaiModal .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Success Button (Apply) */
+#genaiModal .btn-success {
+    background-color: #198754;
+    border-color: #198754;
+    color: #ffffff;
+}
+
+#genaiModal .btn-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+/* Focus effect for all buttons */
+#genaiModal .modal-footer .btn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #genaiModal .modal-dialog {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    #genaiModal .form-label,
+    #genaiModal .btn {
+        font-size: 0.85rem;
+    }
+
+    #genaiModal textarea {
+        min-height: 100px;
+    }
+}
+
+/* ================================================================== */
+/* Toast */
+/* ================================================================== */
+
+/* Toast Container */
+#notificationToast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1100;
+    min-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Show Toast Animation */
+#notificationToast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Toast Body */
+.toast-body {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: white;
+}
+
+/* Close Button */
+.toast .btn-close {
+    filter: invert(1); /* Make the close button white */
+    opacity: 0.8;
+    margin-left: auto;
+}
+
+.toast .btn-close:hover {
+    opacity: 1;
+}
+
+/* Toast Types */
+.toast.bg-success {
+    background-color: #28a745 !important; /* Green */
+}
+
+.toast.bg-danger {
+    background-color: #dc3545 !important; /* Red */
+}
+
+.toast.bg-warning {
+    background-color: #ffc107 !important; /* Yellow */
+    color: #000; /* Black text for better contrast */
+}
+
+.toast.bg-primary {
+    background-color: #007bff !important; /* Blue */
+}
+
+.toast.bg-info {
+    background-color: #17a2b8 !important; /* Teal */
+}
+
+
+/* ================================================================== */
+/* Exhibits Table Styling */
+/* ================================================================== */
+
+#petition-exhibitsTable {
+    width: 100% !important; /* Full width */
+    border-collapse: collapse !important; /* Collapse borders */
+}
+
+#petition-exhibitsTable th,
+#petition-exhibitsTable td {
+    vertical-align: middle !important;
+    padding: 8px !important; /* Reduced padding for table cells */
+    font-size: 0.8rem !important; /* Smaller font size */
+    border: 1px solid #dee2e6 !important; /* Light borders */
+    color: #343a40 !important; /* Dark text */
+}
+
+#petition-exhibitsTable th {
+    background-color: #f8f9fa !important; /* Light header background */
+    font-weight: 600 !important; /* Bold headers */
+    text-align: center !important; /* Centered text */
+}
+
+#petition-exhibitsTable tr:hover {
+    background-color: #e2e6ea !important; /* Highlight row on hover */
+}
+
+#petition-exhibitsTable td input {
+    width: 100% !important; /* Full width inputs */
+    padding: 3px !important; /* Reduced padding */
+    font-size: 0.75rem !important; /* Smaller font size */
+    border: 1px solid #ced4da !important; /* Light border */
+    border-radius: 3px !important; /* Rounded corners */
+}
+
+#petition-exhibitsTable td .btn-danger {
+    padding: 3px 6px !important; /* Adequate padding for buttons */
+    font-size: 0.7rem !important; /* Smaller font size */
+    border-radius: 3px !important; /* Rounded corners */
+}
+
+/* ================================================================== */
+/* Quill Editor Customization */
+/* ================================================================== */
+
+.petition-main-content .ql-toolbar {
+    border-radius: 5px 5px 0 0 !important; /* Rounded top corners */
+}
+
+.petition-main-content .ql-container {
+    border-radius: 0 0 5px 5px !important; /* Rounded bottom corners */
+}
+
+.petition-main-content .quill-editor {
+    height: 500px !important; /* Increased height for more typing space */
+    width: 100% !important; /* Full width */
+    background-color: #ffffff !important;
+    border-radius: 5px !important; /* Rounded corners for editor */
+    border: 1px solid #ced4da !important; /* Light border */
+}
+
+/* ================================================================== */
+/* Scrollbar Customization for Modals */
+/* ================================================================== */
+
+/* Custom Scrollbars for Modal Bodies */
+.petition-main-content .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.petition-main-content .modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.petition-main-content .modal-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.petition-main-content .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ================================================================== */
+/* Responsive Adjustments */
+/* ================================================================== */
+
+@media (max-width: 1400px) {
+    /* Further adjust modal widths for slightly smaller screens */
+    #petition-coverLetterModal .modal-dialog {
+        width: 95% !important;
+    }
+
+    #petition-listOfExhibitsModal .modal-dialog {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    /* Adjust modal widths for medium screens */
+    #petition-coverLetterModal .modal-dialog {
+        width: 95% !important;
+    }
+    
+    #petition-listOfExhibitsModal .modal-dialog {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 992px) {
+    /* Adjust columns for smaller screens */
+    .petition-left-column,
+    .petition-folder-column,
+    .petition-upload-column,
+    .petition-right-existing-files {
+        flex: 1 1 100% !important; /* Stack columns vertically */
+        min-width: 100% !important;
+    }
+    
+    .petition-right-column .quill-editor {
+        height: 250px !important; /* Smaller editor height */
+    }
+    
+    .petition-main-content #petition-exhibitsTable th,
+    .petition-main-content #petition-exhibitsTable td {
+        padding: 6px !important; /* Further reduced padding */
+    }
+}
+
+@media (max-width: 768px) {
+    /* Further adjustments for mobile screens */
+    .petition-left-column,
+    .petition-folder-column,
+    .petition-upload-column,
+    .petition-right-existing-files {
+        padding: 5px !important; /* Reduce padding */
+    }
+    
+    .petition-main-content .quill-editor {
+        height: 250px !important;
+    }
+    
+    .petition-main-content .modal .quill-editor {
+        height: 220px !important;
+    }
+
+    /* Adjust modal width for smaller screens */
+    #genaiModal .modal-dialog {
+        width: 95%; /* Full width on smaller screens */
+        max-width: none; /* Remove max-width restriction */
+    }
+
+    /* Reduce padding for smaller screens */
+    #genaiModal .modal-body {
+        padding: 15px;
+    }
+
+    /* Smaller font size for inputs and labels */
+    #genaiModal .form-label,
+    #genaiModal .form-select,
+    #genaiModal .form-control,
+    #genaiModal .custom-textarea {
+        font-size: 0.85rem;
+    }
+
+    /* Smaller buttons */
+    #genaiModal .modal-footer .btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Mobile-specific adjustments */
+    .petition-main-content {
+        padding: 10px !important; /* Minimal padding */
+    }
+    
+    #petition-coverLetterModal .modal-dialog,
+    #petition-listOfExhibitsModal .modal-dialog {
+        width: 100% !important; /* Full width on small screens */
+        height: 100% !important; /* Full height for better usability */
+    }
+
+    .petition-main-content .modal .modal-content {
+        height: 100% !important;
+    }
+
+    .petition-main-content .modal .modal-body {
+        overflow-y: auto !important;
+    }
+
+    .petition-main-content .modal .quill-editor {
+        height: 180px !important;
+    }
+
+    /* Further adjustments for mobile screens */
+    #genaiModal .modal-content {
+        height: 90vh !important; /* Full height for better usability */
+    }
+
+    #genaiModal .modal-body {
+        padding: 10px;
+    }
+
+    #genaiModal #genaiOutput {
+        max-height: 150px !important; /* Smaller output area */
+    }
+}
+
+/* ================================================================== */
+/* Additional Enhancements */
+/* ================================================================== */
+
+/* Hover Effects for Tables */
+.petition-main-content #petition-exhibitsTable tr:hover {
+    background-color: #e2e6ea !important; /* Enhanced hover color */
+}
+
+.petition-right-column #petition-downloadPDFBtn:hover {
+    background-color: #5a6268 !important; /* Darker on hover */
+    border-color: #545b62 !important;
+}
+
+/* ================================================================== */
+/* Font Awesome Integration */
+/* ================================================================== */
+
+/* Ensure that Font Awesome icons are properly aligned */
+.petition-existing-files-list .btn i {
+    font-size: 0.9rem; /* Slightly smaller icons */
+}
+
+/* ================================================================== */
+/* Responsive Flexbox Adjustments */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+    #petition-top-section {
+        flex-direction: column;
+    }
+}

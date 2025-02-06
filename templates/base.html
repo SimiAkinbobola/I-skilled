@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Candidate Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous">
+</head>
+<body>
+  <div class="sidebar">
+    <img src="{{ url_for('static', filename='images/logo2_180px_bg.png') }}" alt="Logo" class="logo">
+    <h2 class="brand-name">i-Skilled</h2>
+    <ul class="menu">
+      <li>
+        <a href="{{ url_for('reports') }}" class="menu-item {% if request.path == '/reports' %}active{% endif %}">
+          <i class="fas fa-chart-bar"></i> Overview
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('candidates') }}" class="menu-item {% if request.path == '/candidates' %}active{% endif %}">
+          <i class="fas fa-users"></i> Candidates
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('candidate_form') }}" class="menu-item {% if request.path == '/submit' %}active{% endif %}">
+          <i class="fas fa-user-check"></i> Assessment
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('candidate_analysis') }}" class="menu-item {% if request.path == '/candidate_analysis' %}active{% endif %}">
+          <i class="fas fa-tasks"></i> Auto Evaluate
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('candidate_details') }}" class="menu-item {% if request.path == '/candidate-details' %}active{% endif %}">
+          <i class="fas fa-user-friends"></i> Profile Details
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('petition') }}" class="menu-item {% if request.path == '/petition' %}active{% endif %}">
+          <i class="fas fa-file"></i> Case
+        </a>
+      </li>
+    </ul>
+    
+    <!-- Sidebar Bottom Section -->
+    <div class="sidebar-bottom">
+      <a href="#" class="sidebar-button" id="edit-profile-btn" 
+         data-username="{{ session.get('user_id', '') }}"
+         data-name="{{ session.get('user_name', '') }}"
+         data-email="{{ session.get('email', '') }}"
+         data-phone="{{ session.get('phone', '') }}"
+         title="Edit Profile">
+        <i class="fas fa-edit"></i> Edit Profile
+      </a>
+      <a href="{{ url_for('logout') }}" class="sidebar-button">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+    <!-- End of Sidebar Bottom Section -->
+  </div>
+  
+  <div class="main-content">
+    <div class="top-nav">
+      <button id="toggle-menu">☰</button>
+      <h1>{% block header %}Candidate Dashboard{% endblock %}</h1>
+      <div class="user-profile">
+        <img src="{{ session.get('profile_picture', url_for('static', filename='images/placeholder.jpg')) }}" alt="User Avatar" class="profile-picture">
+        <!-- Removed the Edit Profile Icon from Here -->
+      </div>
+    </div>
+    <div class="content-area">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-modal">&times;</span>
+      <h2>Edit Profile</h2>
+      <form action="/update-profile" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value="{{ session.get('user_name', '') }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter new password (leave blank to keep current)"
+          />
+        </div>
+        <div class="form-group">
+          <label for="name">Full Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value="{{ session.get('name', '') }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="{{ session.get('email', '') }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone:</label>
+          <input
+            type="text"
+            id="phone"
+            name="phone"
+            value="{{ session.get('phone', '') }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="profile_picture">Upload Profile Picture:</label>
+          <input
+            type="file"
+            id="profile_picture"
+            name="profile_picture"
+            accept="image/*"
+          />
+        </div>
+        <button type="submit" class="btn">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

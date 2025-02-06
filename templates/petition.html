@@ -1,0 +1,1133 @@
+{% extends "base.html" %}
+{% block content %}
+{% block header %}Petition Management{% endblock %}
+
+<!-- Include Quill CSS and Petition-specific Styles -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/petition_style.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/petition_unique_styles.css') }}" rel="stylesheet"> <!-- Ensure unique styles are included -->
+
+<!-- Cover Letter Template Stored in a Hidden Script Tag -->
+<script type="text/template" id="cover-letter-template">
+    <!-- Minimal CSS to demonstrate the approach -->
+    <style>
+      /* Use normal decimal numbering for the main list */
+      .custom-ol {
+        list-style-type: decimal;
+        margin-left: 2em;
+      }
+  
+      /* Sub-list (subpoenas) without numbers */
+      .subpoena-list {
+        list-style-type: none;
+        margin-left: 2em;
+      }
+    </style>
+  
+    <p>
+      I am respectfully submitting this brief in support of my Form I-140 self-petition. 
+      I seek to qualify as a member of the professions holding an advanced degree 
+      and additionally request a National Interest Waiver (NIW) of the job offer requirement. 
+      This brief will discuss the evidence I have submitted in support of my petition 
+      and contextualize that evidence within the NIW’s legal framework as established in 
+      <em>Matter of Dhanasar</em> (26 I&N Dec. 884 (AAO 2016)). Specifically, the evidence 
+      submitted with this brief will demonstrate the following:
+    </p>
+    <br>
+  
+    <!-- Single <ol> with 4 main items -->
+    <ol start="1" class="custom-ol">
+      <!-- #1 -->
+      <li>
+        I have been awarded a <strong>[Your Degree]</strong> from <strong>[Your University]</strong>,
+        a respected institution in the United States with its <strong>[Program Name]</strong>
+        ranked in the top <strong>[Rank]</strong> nationally by <strong>[Ranking Body]</strong>.
+        This degree qualifies me as a member of the professions holding an advanced degree.
+        I also hold a <strong>[Your Previous Degree]</strong> with a specialization in
+        <strong>[Your Specialization]</strong> from <strong>[Your Previous Institution]</strong>,
+        ranked as a top institution in <strong>[Your Country]</strong>.
+      </li>
+  
+      <!-- #2 -->
+      <li>
+        I propose to advance the field of <strong>[Your Field]</strong> by developing and applying
+        sophisticated <strong>[Your Expertise]</strong>, specifically
+        <strong>[Specific Techniques or Technologies]</strong>. These frameworks address critical
+        <strong>[Your Field]</strong> challenges in the <strong>[Relevant Sectors]</strong>
+        sectors—an endeavor of substantial merit and national importance.
+      </li>
+  
+      <!-- #3 (contains an inner un-numbered list for "subpoenas") -->
+      <li>
+        I am well-positioned to advance the proposed endeavor due to:
+        <ul class="subpoena-list">
+          <li>
+            My education, experience, expertise, and record of success in 
+            <strong>[Your Field]</strong>, as evidenced by my academic achievements,
+            high-impact projects, knowledge, and specialized skills in <strong>[Your Skills]</strong>.
+          </li>
+          <li>
+            My substantial progress toward achieving the proposed endeavor, 
+            demonstrated through my current projects in <strong>[Your Current Projects]</strong>,
+            and my plans for <strong>[Your Plans to continue to work on this project]</strong>.
+          </li>
+        </ul>
+      </li>
+    </ol>
+  
+    <!-- #4 -->
+    <br>
+    <p>
+    On balance, it would be beneficial for the United States to waive the requirements of
+    a job offer and thus of a labor certification for my petition.
+    </p>
+  
+    <br>
+    <p>
+      Enclosed for your review are completed forms I-140 and ETA-9089, a money order of $710.00,
+      and numerous supporting documents referred to as exhibits.
+    </p>
+  </script>
+
+<!-- Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="notificationToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastBody">
+                <!-- Notification Message -->
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5 petition-main-content">
+    <div id="petition-top-section" class="d-flex gap-4 flex-wrap">
+        <!-- Combined Form -->
+        <form id="petition-combined-form" action="{{ url_for('petition') }}" method="POST" enctype="multipart/form-data" class="card p-3 shadow-sm flex-grow-1">
+            <div id="petition-top-container" class="d-flex gap-3 flex-wrap">
+                <!-- Column 1: Candidate Selection -->
+                <div class="petition-left-column flex-grow-1">
+                    <div class="mb-3">
+                        <label for="petition-candidate_id" class="form-label fw-bold">Select Candidate</label>
+                        <select class="form-select" id="petition-candidate_id" name="candidate_id" required>
+                            <option value="" disabled selected>-- Choose Candidate --</option>
+                            {% for candidate in candidates %}
+                                <option value="{{ candidate.id }}" {% if candidate.id == selected_candidate_id %}selected{% endif %}>
+                                    {{ candidate.full_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            
+                <!-- Column 2: Folder Type Selection -->
+                <div class="petition-folder-column flex-grow-1">
+                    <div class="mb-3">
+                        <label for="petition-folder_type" class="form-label fw-bold">Folder Type</label>
+                        <select class="form-select" id="petition-folder_type" name="folder_type" required>
+                            <option value="" disabled selected>-- Choose Folder --</option>
+                            <option value="Exhibits" selected>Exhibits</option>
+                            <option value="Uploads">Uploads</option>
+                            <option value="Resume">Resume</option>
+                            <option value="Payments">Payments</option>
+                        </select>
+                    </div>
+                </div>
+            
+                <!-- Column 3: File Upload -->
+                <div class="petition-upload-column flex-grow-2">
+                    <div class="mb-3">
+                        <label for="petition-files" class="form-label fw-bold">Choose Files</label>
+                        <input class="form-control" type="file" name="files" id="petition-files" multiple>
+                        <div class="form-text small">Allowed: {{ ', '.join(allowed_extensions) }}</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload</button>
+                </div>
+            </div>
+        </form>
+    
+        <!-- Existing Files Section -->
+        <div class="petition-right-existing-files flex-grow-1">
+            <div id="petition-existing-files-section" class="card p-3 shadow-sm">
+                <h5 class="mb-2">Existing Files in <span id="petition-current-folder-name" class="text-primary"></span></h5>
+                <ul id="petition-existing-files-list" class="list-group mt-2">
+                    <!-- Populated dynamically via JavaScript -->
+                </ul>
+            </div>
+        </div>
+    </div> 
+
+    <!-- Additional Content (Buttons, Modals, etc.) -->
+    <div class="row mt-4">
+        <!-- Right Column: Petition Content and Modals (Full Width) -->
+        <div class="petition-right-column">
+            <!-- Buttons to Open Modals for Cover Letter, List of Exhibits, and GenAI -->
+            <div class="d-flex justify-content-end mb-3">
+                <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#petition-coverLetterModal">
+                    Edit Cover Letter
+                </button>
+                <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#petition-listOfExhibitsModal">
+                    Edit List of Exhibits
+                </button>
+                <button type="button" class="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#genaiModal">
+                    Generate Content
+                </button>
+                <!-- Download PDF -->
+                <button type="button" id="petition-downloadPDFBtn" class="btn btn-info btn-lg" disabled>
+                    Download Petition as PDF
+                </button>
+            </div>
+
+            <!-- Petition Details -->
+            <form id="petition-form" class="card p-3 shadow-sm">
+                <div class="mb-4">
+                    <label for="petition_editor" class="form-label fw-bold">Petition Content</label>
+                    <div id="petition_editor" class="quill-editor"></div>
+                </div>
+                <button type="button" id="petition-savePetitionBtn" class="btn btn-success w-100">Save Petition</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cover Letter Modal -->
+<div class="modal fade" id="petition-coverLetterModal" tabindex="-1" aria-labelledby="petition-coverLetterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Cover Letter / Introduction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="petition-cover_letter_editor_modal" class="quill-editor"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="petition-saveCoverLetterBtn" class="btn btn-primary">Save Cover Letter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- List of Exhibits Modal -->
+<div class="modal fade" id="petition-listOfExhibitsModal" tabindex="-1" aria-labelledby="petition-listOfExhibitsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit List of Exhibits</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered" id="petition-exhibitsTable">
+                    <thead>
+                        <tr>
+                            <th>Exhibit #</th>
+                            <th>Details</th>
+                            <th>Comment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Exhibit rows will be inserted here dynamically -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary mt-3" id="petition-addExhibitRow">Add Exhibit</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="petition-saveExhibitsBtn" class="btn btn-primary">Save Exhibits</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GenAI API Modal -->
+<div class="modal fade" id="genaiModal" tabindex="-1" aria-labelledby="genaiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="genaiModalLabel">Generate Content with i-Skilled</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Prompt Selection: Label on left, select on right -->
+                <div class="mb-3 row align-items-center">
+                    <label for="genaiPrompt" class="col-sm-4 col-form-label">Select Prompt</label>
+                    <div class="col-sm-8">
+                        <select class="form-select" id="genaiPrompt">
+                            <option value="" disabled selected>-- Choose a Prompt --</option>
+                            <option value="cover_letter">Cover Letter</option>
+                            <option value="advanced_degree">Advanced Degree</option>
+                            <option value="proposed_endeavor_intro">Proposed Endeavor Introduction</option>
+                            <option value="substantial_merit">Substantial Merit</option>
+                            <option value="national_importance">National Importance</option>
+                            <option value="well_positioned">Well-Positioned (Qualifying Criteria)</option>
+                            <option value="exceptional_contributions">Evidence of Exceptional Contributions (e.g., patents, publications)</option>
+                            <option value="letters_of_recommendation">Letters of Recommendation (LOEs)</option>
+                            <option value="projects">Projects (Technical, Academic, or Sector-Specific)</option>
+                            <option value="awards">Awards and Recognitions</option>
+                            <option value="membership">Membership in Professional Organizations</option>
+                            <option value="impact_evidence">Evidence of Impact (Citations, Reviews, Reports)</option>
+                            <option value="industry_contributions">Industry Contributions (Keynotes, Thought Leadership)</option>
+                            <option value="on_balance">On Balance (Final Merit Analysis)</option>
+                            <option value="business_plans">Business Plans / Economic Impact Analysis (Optional but valuable)</option>
+                            <option value="employer_affidavits">Employer Affidavits (for professional experience)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Example Display: Label on top -->
+                <div class="mb-3">
+                    <label for="genaiExample" class="form-label">Example for Selected Prompt</label>
+                    <div id="genaiExample" class="form-control bg-light" style="height: 150px; overflow-y: auto;">
+                        <em>Select a prompt to see examples or guidance here.</em>
+                    </div>
+                </div>
+
+                <!-- Common Fields: Labels on top -->
+                <div id="commonFields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="proposedEndeavorSummary" class="form-label">Proposed Endeavor Summary</label>
+                        <textarea class="form-control" id="proposedEndeavorSummary" rows="2" placeholder="Enter proposed endeavor summary..." name="proposed_endeavor_summary"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="field" class="form-label">Field</label>
+                        <input type="text" class="form-control" id="field" placeholder="Enter field..." name="field">
+                    </div>
+                </div>
+
+                <!-- Dynamic Additional Fields -->
+                <div id="additionalFields"></div>
+
+                <!-- Custom Prompt (Optional): Label on top -->
+                <div class="mb-3">
+                    <label for="genaiCustomPrompt" class="form-label">Additional Prompt (Optional)</label>
+                    <textarea class="form-control custom-textarea" id="genaiCustomPrompt" rows="4" placeholder="Add additional instructions or refine the prompt here..."></textarea>
+                </div>
+
+                
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <!-- Generated Content: Label on top -->
+                <div class="mb-3">
+                    <label for="genaiOutput" class="form-label">Generated Content</label>
+                    <div id="genaiOutput" class="form-control bg-light" style="height: 200px; overflow-y: auto;"></div>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="genaiGenerateBtn" class="btn btn-primary">Generate</button>
+                <button type="button" id="genaiCopyBtn" class="btn btn-success">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<!-- Bootstrap JS (Ensure Bootstrap JS is included for modals to work) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Font Awesome for Icons (Ensure you have Font Awesome included) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/kTcPH+nHKbIq7C1G+lRLpKoj7eHyVJ1rCth8eVzFqYDAxVFPBWw7BWRIN0gQGq0lXgIBH4uPHl2Qg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Initialize Quill Editors and Add Rename Functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Quill Editors for Petition and Cover Letter
+        const quillOptions = {
+            theme: 'snow',
+            placeholder: 'Enter text here...',
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['link', 'blockquote', 'code-block'],
+                    [{ list: 'ordered'}, { list: 'bullet' }],
+                    ['clean']
+                ]
+            }
+        };
+
+        // Petition Editor
+        const petitionEditor = new Quill('#petition_editor', quillOptions);
+
+        // Cover Letter Editor in Modal
+        const petitionCoverLetterEditorModal = new Quill('#petition-cover_letter_editor_modal', quillOptions);
+
+        // Load Cover Letter Template from the <script> tag
+        const coverLetterTemplate = document.getElementById('cover-letter-template').innerHTML;
+
+        // Function to get formatted current date
+        function getFormattedDate() {
+            const currentDate = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return currentDate.toLocaleDateString('en-GB', options); // e.g., "12 November 2024"
+        }
+
+        // Assemble Header Lines
+        function getHeaderHtml() {
+            const date = getFormattedDate();
+            const headerDate = `<p class="cover-letter-header-date">${date}</p>`;
+            const headerTitle = `<p class="cover-letter-header-title">[Name]’s [EB1A, National Interest Waiver, EB3] Petition</p>`;
+            const headerSubtitle = `<p class="cover-letter-header-subtitle">Original Submission</p>`;
+            const headerBreak = `<br class="cover-letter-header-spacing">`;
+            return headerDate + headerTitle + headerSubtitle + headerBreak;
+        }
+
+        // Combine Header and Template
+        const fullCoverLetterHtml = getHeaderHtml() + coverLetterTemplate;
+
+        // Inject the combined HTML into the Cover Letter Editor
+        petitionCoverLetterEditorModal.clipboard.dangerouslyPasteHTML(fullCoverLetterHtml);
+
+        // Exhibits Data
+        let petitionExhibitsData = [];
+
+        // Function to load exhibits into the table
+        function loadPetitionExhibits() {
+            const tbody = document.querySelector('#petition-exhibitsTable tbody');
+            tbody.innerHTML = ''; // Clear existing rows
+            petitionExhibitsData.forEach((exhibit, index) => {
+                const tr = document.createElement('tr');
+
+                // Exhibit #
+                const tdNumber = document.createElement('td');
+                tdNumber.textContent = index + 1;
+                tr.appendChild(tdNumber);
+
+                // Details
+                const tdDetails = document.createElement('td');
+                const inputDetails = document.createElement('input');
+                inputDetails.type = 'text';
+                inputDetails.className = 'form-control';
+                inputDetails.value = exhibit.details || '';
+                inputDetails.setAttribute('data-index', index);
+                inputDetails.setAttribute('name', `exhibit_details_${index}`);
+                tdDetails.appendChild(inputDetails);
+                tr.appendChild(tdDetails);
+
+                // Comment
+                const tdComment = document.createElement('td');
+                const inputComment = document.createElement('input');
+                inputComment.type = 'text';
+                inputComment.className = 'form-control';
+                inputComment.value = exhibit.comment || '';
+                inputComment.setAttribute('data-index', index);
+                inputComment.setAttribute('name', `exhibit_comment_${index}`);
+                tdComment.appendChild(inputComment);
+                tr.appendChild(tdComment);
+
+                // Actions
+                const tdActions = document.createElement('td');
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'btn btn-danger btn-sm';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', () => {
+                    petitionExhibitsData.splice(index, 1);
+                    loadPetitionExhibits();
+                });
+                tdActions.appendChild(deleteBtn);
+                tr.appendChild(tdActions);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Add Exhibit Row
+        document.getElementById('petition-addExhibitRow').addEventListener('click', () => {
+            petitionExhibitsData.push({ details: '', comment: '' });
+            loadPetitionExhibits();
+        });
+
+        // Save Exhibits
+        document.getElementById('petition-saveExhibitsBtn').addEventListener('click', () => {
+            // Collect data from table
+            const tbody = document.querySelector('#petition-exhibitsTable tbody');
+            const rows = tbody.querySelectorAll('tr');
+            petitionExhibitsData = []; // Reset
+            rows.forEach((tr) => {
+                const details = tr.querySelector('input[name^="exhibit_details_"]').value;
+                const comment = tr.querySelector('input[name^="exhibit_comment_"]').value;
+                petitionExhibitsData.push({ details, comment });
+            });
+
+            // Send data to backend via AJAX
+            const candidateId = document.getElementById('petition-candidate_id').value;
+            if (!candidateId) {
+                showToast("Please select a candidate before saving exhibits.", 'danger');
+                return;
+            }
+
+            const payload = {
+                cover_letter: null, // Not updating cover letter here
+                petition: null, // Not updating petition here
+                list_of_exhibits: petitionExhibitsData
+            };
+
+            fetch(`/api/candidate/${candidateId}/petition_details`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Exhibits saved successfully!", 'success');
+                    // Optionally, update petitionExhibitsData if backend modifies it
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('petition-listOfExhibitsModal'));
+                    modal.hide();
+                } else {
+                    showToast("Error saving exhibits: " + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showToast("An error occurred while saving exhibits.", 'danger');
+            });
+        });
+
+        // Save Cover Letter from Modal
+        document.getElementById('petition-saveCoverLetterBtn').addEventListener('click', () => {
+            const candidateId = document.getElementById('petition-candidate_id').value;
+            if (!candidateId) {
+                showToast("Please select a candidate before saving cover letter.", 'danger');
+                return;
+            }
+
+            const coverLetter = petitionCoverLetterEditorModal.root.innerHTML.trim();
+
+            const payload = {
+                cover_letter: coverLetter,
+                petition: null, // Not updating petition here
+                list_of_exhibits: null // Not updating exhibits here
+            };
+
+            fetch(`/api/candidate/${candidateId}/petition_details`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Cover letter saved successfully!", 'success');
+                    // Optionally, sync with main Petition editor if necessary
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('petition-coverLetterModal'));
+                    modal.hide();
+                } else {
+                    showToast("Error saving cover letter: " + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showToast("An error occurred while saving the cover letter.", 'danger');
+            });
+        });
+
+        // Save Petition Details
+        document.getElementById('petition-savePetitionBtn').addEventListener('click', async () => {
+            const candidateId = document.getElementById('petition-candidate_id').value;
+            if (!candidateId) {
+                showToast("Please select a candidate before saving petition details.", 'danger');
+                return;
+            }
+
+            const petitionContent = petitionEditor.root.innerHTML.trim();
+
+            const payload = {
+                cover_letter: null, // Not updating cover letter here
+                petition: petitionContent, // Updating petition
+                list_of_exhibits: null // Not updating exhibits here
+            };
+
+            fetch(`/api/candidate/${candidateId}/petition_details`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast("Petition saved successfully!", 'success');
+                    // Enable the Download PDF button
+                    document.getElementById('petition-downloadPDFBtn').disabled = false;
+                } else {
+                    console.error("Error saving petition:", data);
+                    showToast("Error saving petition details. Check console for details.", 'danger');
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+                showToast("An error occurred while saving petition details.", 'danger');
+            });
+        });
+
+        // Enable PDF Download Button if Petition Exists
+        async function checkPetitionDetails() {
+            const candidateId = document.getElementById('petition-candidate_id').value;
+            const folderType = document.getElementById('petition-folder_type').value;
+            if (candidateId) {
+                try {
+                    const response = await fetch(`/api/candidate/${candidateId}/petition_details`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.petition) {
+                            document.getElementById('petition-downloadPDFBtn').disabled = false;
+                            petitionEditor.root.innerHTML = data.petition; // Load existing petition
+                        } else {
+                            document.getElementById('petition-downloadPDFBtn').disabled = true;
+                            petitionEditor.root.innerHTML = ''; // Clear editor if no petition
+                        }
+
+                        // Load existing Cover Letter
+                        if (data.cover_letter) {
+                            petitionCoverLetterEditorModal.clipboard.dangerouslyPasteHTML(data.cover_letter);
+                        } else {
+                            // Load template if no existing cover letter
+                            petitionCoverLetterEditorModal.clipboard.dangerouslyPasteHTML(fullCoverLetterHtml);
+                        }
+
+                        // Load existing Exhibits
+                        if (data.list_of_exhibits) {
+                            petitionExhibitsData = data.list_of_exhibits;
+                            loadPetitionExhibits();
+                        } else {
+                            petitionExhibitsData = [];
+                            loadPetitionExhibits();
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error checking petition details:", error);
+                }
+            } else {
+                document.getElementById('petition-downloadPDFBtn').disabled = true;
+                petitionEditor.root.innerHTML = '';
+                petitionCoverLetterEditorModal.clipboard.dangerouslyPasteHTML(fullCoverLetterHtml);
+                petitionExhibitsData = [];
+                loadPetitionExhibits();
+            }
+        }
+
+        // Check Petition Details When Candidate or Folder Selection Changes
+        document.getElementById('petition-combined-form').addEventListener('change', (event) => {
+            const target = event.target;
+            if (target.id === 'petition-candidate_id' || target.id === 'petition-folder_type') {
+                const candidateId = document.getElementById('petition-candidate_id').value;
+                const folderType = document.getElementById('petition-folder_type').value;
+
+                if (candidateId && folderType) {
+                    document.getElementById('petition-current-folder-name').textContent = folderType;
+                    fetchPetitionExistingFiles(candidateId, folderType);
+                    checkPetitionDetails();  // Load petition details for the selected candidate
+                }
+            }
+        });
+
+        // Download PDF Button
+        document.getElementById('petition-downloadPDFBtn').addEventListener('click', () => {
+            const candidateId = document.getElementById('petition-candidate_id').value;
+            if (!candidateId) {
+                showToast("Please select a candidate before downloading PDF.", 'danger');
+                return;
+            }
+            window.location.href = `/candidate/${candidateId}/pdf`;
+        });
+
+        // Helper to fetch existing files for a candidate/folder
+        async function fetchPetitionExistingFiles(candidateId, folder) {
+            if (!candidateId || !folder) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/candidate/${candidateId}/files?folder=${folder}`);
+                if (!response.ok) {
+                    console.error("Error fetching files:", response.statusText);
+                    return;
+                }
+                const data = await response.json();
+                if (data.files && data.files.length > 0) {
+                    // Clear existing file list
+                    const existingFilesList = document.getElementById('petition-existing-files-list');
+                    existingFilesList.innerHTML = '';
+                    data.files.forEach((filePath) => {
+                        const fileName = filePath.split('/').pop(); // Extract filename from path
+                        const li = document.createElement('li');
+                        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+
+                        // File Name
+                        const fileNameSpan = document.createElement('span');
+                        fileNameSpan.textContent = fileName;
+                        li.appendChild(fileNameSpan);
+
+                        // Action Buttons Container
+                        const actionsContainer = document.createElement('div');
+                        actionsContainer.classList.add('d-flex', 'align-items-center', 'gap-2'); // Flex container for buttons
+
+                        // Rename Button
+                        const renameBtn = document.createElement('button');
+                        renameBtn.type = 'button';
+                        renameBtn.className = 'btn btn-outline-secondary btn-sm';
+                        renameBtn.innerHTML = '<i class="fas fa-edit"></i> Rename'; // Added text for clarity
+                        renameBtn.setAttribute('data-file-path', filePath);
+                        renameBtn.addEventListener('click', handleRenameFile);
+                        actionsContainer.appendChild(renameBtn);
+
+                        // Download Button
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = `/${filePath}`;
+                        downloadLink.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+                        downloadLink.innerHTML = '<i class="fas fa-download"></i> Download'; // Added text for clarity
+                        downloadLink.target = '_blank';
+                        actionsContainer.appendChild(downloadLink);
+
+                        li.appendChild(actionsContainer);
+                        existingFilesList.appendChild(li);
+                    });
+                    document.getElementById('petition-existing-files-section').style.display = 'block';
+                } else {
+                    document.getElementById('petition-existing-files-list').innerHTML = '<li class="list-group-item">No files found.</li>';
+                    document.getElementById('petition-existing-files-section').style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // Handler for Rename Button Click
+        function handleRenameFile(event) {
+            const oldFilePath = event.target.getAttribute('data-file-path') || event.target.parentElement.getAttribute('data-file-path');
+            const oldFileName = oldFilePath.split('/').pop();
+            const newFileName = prompt("Enter the new name for the file:", oldFileName);
+
+            if (newFileName && newFileName.trim() !== "" && newFileName !== oldFileName) {
+                // Optionally, add validation for the new file name here
+
+                // Send AJAX request to rename the file
+                const candidateId = document.getElementById('petition-candidate_id').value;
+                if (!candidateId) {
+                    showToast("Please select a candidate before renaming files.", 'danger');
+                    return;
+                }
+
+                const payload = {
+                    old_file_path: oldFilePath,
+                    new_file_name: newFileName
+                };
+
+                fetch(`/api/candidate/${candidateId}/rename_file`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast("File renamed successfully!", 'success');
+                        // Refresh the existing files list
+                        const folderType = document.getElementById('petition-folder_type').value;
+                        fetchPetitionExistingFiles(candidateId, folderType);
+                    } else {
+                        showToast("Error renaming file: " + data.error, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    showToast("An error occurred while renaming the file.", 'danger');
+                });
+            } else if (newFileName === oldFileName) {
+                showToast("The new file name is the same as the old one.", 'warning');
+            }
+            // If newFileName is null or empty, do nothing (user cancelled)
+        }
+
+        // Initialize the page with the selected candidate's details if any
+        window.addEventListener('load', () => {
+            const folderType = "Exhibits";  // Set default folder type
+            const candidateSelect = document.getElementById('petition-candidate_id');
+            const candidateId = candidateSelect.value;
+
+            if (candidateId) {
+                // Load default exhibits folder for the selected candidate
+                document.getElementById('petition-folder_type').value = folderType;
+                document.getElementById('petition-current-folder-name').textContent = folderType;
+                fetchPetitionExistingFiles(candidateId, folderType);
+                checkPetitionDetails();  // Ensure petition details are loaded
+            }
+        });
+
+        // GenAI Elements
+        const genaiGenerateBtn = document.getElementById('genaiGenerateBtn');
+        const genaiApplyBtn = document.getElementById('genaiApplyBtn');
+        const genaiOutput = document.getElementById('genaiOutput');
+        const genaiCustomPrompt = document.getElementById('genaiCustomPrompt');
+        const genaiExample = document.getElementById('genaiExample');
+        const genaiPromptSelect = document.getElementById('genaiPrompt');
+        const additionalFieldsContainer = document.getElementById('additionalFields');
+        const commonFieldsContainer = document.getElementById('commonFields');
+
+        // Function to clear additional fields
+        function clearAdditionalFields() {
+            additionalFieldsContainer.innerHTML = '';
+        }
+
+        // Function to add Substantial Merit Source Row
+        function addSubstantialMeritSource() {
+            const row = document.createElement('div');
+            row.className = 'row mb-2 source-row';
+
+            const sourceDiv = document.createElement('div');
+            sourceDiv.className = 'col-md-5';
+            const sourceInput = document.createElement('input');
+            sourceInput.type = 'text';
+            sourceInput.className = 'form-control';
+            sourceInput.placeholder = 'Source';
+            sourceInput.name = 'substantial_merit_source[]';
+            sourceDiv.appendChild(sourceInput);
+
+            const articleDiv = document.createElement('div');
+            articleDiv.className = 'col-md-5';
+            const articleInput = document.createElement('input');
+            articleInput.type = 'text';
+            articleInput.className = 'form-control';
+            articleInput.placeholder = 'Article';
+            articleInput.name = 'substantial_merit_article[]';
+            articleDiv.appendChild(articleInput);
+
+            const removeBtnDiv = document.createElement('div');
+            removeBtnDiv.className = 'col-md-2';
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-danger btn-sm';
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+            });
+            removeBtnDiv.appendChild(removeBtn);
+
+            row.appendChild(sourceDiv);
+            row.appendChild(articleDiv);
+            row.appendChild(removeBtnDiv);
+
+            additionalFieldsContainer.appendChild(row);
+        }
+
+        // Function to add National Importance Source Row
+        function addNationalImportanceSource() {
+            const row = document.createElement('div');
+            row.className = 'row mb-2 source-row';
+
+            const sourceDiv = document.createElement('div');
+            sourceDiv.className = 'col-md-5';
+            const sourceInput = document.createElement('input');
+            sourceInput.type = 'text';
+            sourceInput.className = 'form-control';
+            sourceInput.placeholder = 'Source';
+            sourceInput.name = 'national_importance_source[]';
+            sourceDiv.appendChild(sourceInput);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'col-md-5';
+            const contentInput = document.createElement('input');
+            contentInput.type = 'text';
+            contentInput.className = 'form-control';
+            contentInput.placeholder = 'Content';
+            contentInput.name = 'national_importance_content[]';
+            contentDiv.appendChild(contentInput);
+
+            const removeBtnDiv = document.createElement('div');
+            removeBtnDiv.className = 'col-md-2';
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-danger btn-sm';
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+            });
+            removeBtnDiv.appendChild(removeBtn);
+
+            row.appendChild(sourceDiv);
+            row.appendChild(contentDiv);
+            row.appendChild(removeBtnDiv);
+
+            additionalFieldsContainer.appendChild(row);
+        }
+
+        // Function to handle additional fields based on prompt type
+        function handleAdditionalFields(promptType) {
+            clearAdditionalFields();
+            switch(promptType) {
+                case 'proposed_endeavor_intro':
+                    // Add description and plan fields
+                    const descriptionDiv = document.createElement('div');
+                    descriptionDiv.className = 'mb-3';
+                    const descriptionLabel = document.createElement('label');
+                    descriptionLabel.setAttribute('for', 'proposedEndeavorDescription');
+                    descriptionLabel.className = 'form-label';
+                    descriptionLabel.textContent = 'Description of Proposed Endeavor';
+                    const descriptionTextarea = document.createElement('textarea');
+                    descriptionTextarea.className = 'form-control';
+                    descriptionTextarea.id = 'proposedEndeavorDescription';
+                    descriptionTextarea.rows = 3;
+                    descriptionTextarea.placeholder = 'Enter description...';
+                    descriptionTextarea.name = 'proposed_endeavor_description';
+                    descriptionDiv.appendChild(descriptionLabel);
+                    descriptionDiv.appendChild(descriptionTextarea);
+
+                    const planDiv = document.createElement('div');
+                    planDiv.className = 'mb-3';
+                    const planLabel = document.createElement('label');
+                    planLabel.setAttribute('for', 'proposedEndeavorPlan');
+                    planLabel.className = 'form-label';
+                    planLabel.textContent = 'Plan for Proposed Endeavor';
+                    const planTextarea = document.createElement('textarea');
+                    planTextarea.className = 'form-control';
+                    planTextarea.id = 'proposedEndeavorPlan';
+                    planTextarea.rows = 3;
+                    planTextarea.placeholder = 'Enter plan...';
+                    planTextarea.name = 'proposed_endeavor_plan';
+                    planDiv.appendChild(planLabel);
+                    planDiv.appendChild(planTextarea);
+
+                    additionalFieldsContainer.appendChild(descriptionDiv);
+                    additionalFieldsContainer.appendChild(planDiv);
+                    break;
+
+                case 'substantial_merit':
+                    // Add Source and Article fields with add/remove functionality
+                    const substantialMeritHeader = document.createElement('h6');
+                    substantialMeritHeader.textContent = 'Substantial Merit Sources';
+                    additionalFieldsContainer.appendChild(substantialMeritHeader);
+
+                    // Add initial source row
+                    addSubstantialMeritSource();
+
+                    // Add button to add more sources
+                    const addSubstantialMeritBtn = document.createElement('button');
+                    addSubstantialMeritBtn.type = 'button';
+                    addSubstantialMeritBtn.className = 'btn btn-secondary btn-sm mt-2';
+                    addSubstantialMeritBtn.textContent = 'Add Source';
+                    addSubstantialMeritBtn.addEventListener('click', addSubstantialMeritSource);
+                    additionalFieldsContainer.appendChild(addSubstantialMeritBtn);
+                    break;
+
+                case 'national_importance':
+                    // Add Source and Content fields with add/remove functionality
+                    const nationalImportanceHeader = document.createElement('h6');
+                    nationalImportanceHeader.textContent = 'National Importance Sources';
+                    additionalFieldsContainer.appendChild(nationalImportanceHeader);
+
+                    // Add initial source row
+                    addNationalImportanceSource();
+
+                    // Add button to add more sources
+                    const addNationalImportanceBtn = document.createElement('button');
+                    addNationalImportanceBtn.type = 'button';
+                    addNationalImportanceBtn.className = 'btn btn-secondary btn-sm mt-2';
+                    addNationalImportanceBtn.textContent = 'Add Source';
+                    addNationalImportanceBtn.addEventListener('click', addNationalImportanceSource);
+                    additionalFieldsContainer.appendChild(addNationalImportanceBtn);
+                    break;
+
+                // Add cases for other prompt types as necessary
+                default:
+                    // For prompts without additional fields, do nothing
+                    break;
+            }
+        }
+
+        // Function to collect additional data before generating
+        async function collectAdditionalData() {
+            const promptType = genaiPromptSelect.value;
+            const proposedEndeavorSummary = document.getElementById('proposedEndeavorSummary') ? document.getElementById('proposedEndeavorSummary').value.trim() : '';
+            const field = document.getElementById('field') ? document.getElementById('field').value.trim() : '';
+
+            const additionalData = {};
+
+            switch(promptType) {
+                case 'proposed_endeavor_intro':
+                    const description = document.getElementById('proposedEndeavorDescription').value.trim();
+                    const plan = document.getElementById('proposedEndeavorPlan').value.trim();
+                    additionalData.description = description;
+                    additionalData.plan = plan;
+                    break;
+
+                case 'substantial_merit':
+                    const sourcesSM = Array.from(document.querySelectorAll('input[name="substantial_merit_source[]"]'))
+                                        .map(input => input.value.trim()).filter(val => val !== '');
+                    const articles = Array.from(document.querySelectorAll('input[name="substantial_merit_article[]"]'))
+                                        .map(input => input.value.trim()).filter(val => val !== '');
+                    additionalData.sources = sourcesSM;
+                    additionalData.articles = articles;
+                    break;
+
+                case 'national_importance':
+                    const sourcesNI = Array.from(document.querySelectorAll('input[name="national_importance_source[]"]'))
+                                        .map(input => input.value.trim()).filter(val => val !== '');
+                    const contents = Array.from(document.querySelectorAll('input[name="national_importance_content[]"]'))
+                                        .map(input => input.value.trim()).filter(val => val !== '');
+                    additionalData.sources = sourcesNI;
+                    additionalData.contents = contents;
+                    break;
+
+                // Add cases for other prompt types as necessary
+
+                default:
+                    // No additional data
+                    break;
+            }
+
+            return {
+                prompt_type: promptType,
+                proposed_endeavor_summary: proposedEndeavorSummary,
+                field: field,
+                additional_data: additionalData
+            };
+        }
+
+        // Function to show toast notifications
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('notificationToast');
+            const toastBody = document.getElementById('toastBody');
+            toastBody.textContent = message;
+
+            // Update background color based on type
+            toastEl.className = `toast align-items-center text-white bg-${type} border-0`;
+
+            // Initialize the toast with autohide and delay
+            const toast = new bootstrap.Toast(toastEl, {
+                autohide: true, // Enable auto-hide
+                delay: 5000     // Set delay to 5 seconds
+            });
+
+            // Show the toast
+            toast.show();
+        }
+
+        // Event Listener for Generate Button
+        genaiGenerateBtn.addEventListener('click', async () => {
+            const candidateId = document.getElementById('petition-candidate_id').value;
+            if (!candidateId) {
+                showToast("Please select a candidate before generating content.", 'danger');
+                return;
+            }
+
+            const customPrompt = genaiCustomPrompt.value.trim();
+            const format = 'text'; // Define a default format or allow user selection
+
+            const payload = await collectAdditionalData();
+
+            payload.candidate_id = candidateId;
+            payload.format = format; // Added 'format' to the payload
+            payload.custom_prompt = customPrompt;
+
+            try {
+                const response = await fetch('/api/genai/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Network response was not ok');
+                }
+
+                const data = await response.json();
+                genaiOutput.innerHTML = data.generated_content || "No content generated.";
+                showToast("Content generated successfully!", 'success');
+            } catch (error) {
+                console.error('Error generating content:', error);
+                showToast("An error occurred while generating content.", 'danger');
+            }
+        });
+
+        // Event Listener for Copy to Clipboard Button
+        document.getElementById('genaiCopyBtn').addEventListener('click', () => {
+            const generatedContent = genaiOutput.innerText; // Use innerText to get plain text
+
+            if (!generatedContent || generatedContent.trim() === "") {
+                showToast("No content to copy.", 'warning');
+                return;
+            }
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(generatedContent)
+                .then(() => {
+                    showToast("Content copied to clipboard!", 'success');
+                })
+                .catch((error) => {
+                    console.error('Failed to copy content:', error);
+                    showToast("Failed to copy content to clipboard.", 'danger');
+                });
+        });
+
+        // Event Listener for Prompt Selection
+        genaiPromptSelect.addEventListener('change', () => {
+            const promptType = genaiPromptSelect.value;
+            console.log("Dropdown changed. Selected prompt_type:", promptType);
+
+            if (!promptType) {
+                console.warn("No prompt_type selected.");
+                genaiExample.innerHTML = '<em>No prompt selected.</em>';
+                commonFieldsContainer.style.display = 'none';
+                clearAdditionalFields();
+                return;
+            }
+
+            // Show common fields
+            commonFieldsContainer.style.display = 'block';
+
+            // Handle additional fields based on prompt type
+            handleAdditionalFields(promptType);
+
+            // Show loading indicator
+            genaiExample.innerHTML = '<em>Loading example...</em>';
+
+            // Fetch example content
+            fetch('/api/get_example', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt_type: promptType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.example) {
+                    genaiExample.innerHTML = data.example;
+                } else if (data.error) {
+                    genaiExample.innerHTML = `<em>${data.error}</em>`;
+                } else {
+                    genaiExample.innerHTML = '<em>No example available.</em>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching example content:', error);
+                genaiExample.innerHTML = '<em>An error occurred while fetching the example.</em>';
+            });
+        });
+
+        // Initialize Quill Editors and Load Initial Data
+        // ... (Your existing initialization code)
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,684 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate Details{% endblock %}
+
+{% block header %}View Candidate Details{% endblock %}
+
+{% block content %}
+<h2>Candidate Details</h2>
+
+<!-- Dropdown to Select Candidate -->
+<div class="candidate-select-container">
+  <label for="candidate-select" class="candidate-select-label">Select Candidate:</label>
+  <select id="candidate-select" class="candidate-select-dropdown">
+    <option value="">-- Select Candidate --</option>
+    {% for candidate in candidates %}
+      <option value="{{ candidate.id }}">{{ candidate.full_name }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+<!-- Candidate Details Section -->
+<div id="candidate-details" class="candidate-details-container" style="display: none;">
+  <h3 id="candidate-name" class="candidate-name"></h3>
+
+  <div class="details-sections">
+    <!-- Personal Information -->
+    <div class="details-section">
+      <h4>Personal Information</h4>
+      <p><strong>Date of Birth:</strong> <span id="dob"></span></p>
+      <p><strong>Nationality:</strong> <span id="nationality"></span></p>
+      <p><strong>Country of Residence:</strong> <span id="country-residence"></span></p>
+      <p><strong>Passport Country:</strong> <span id="passport-country"></span></p>
+      <p><strong>Passport Expiry:</strong> <span id="passport-expiry"></span></p>
+      <p><strong>Marital Status:</strong> <span id="marital-status"></span></p>
+      <p><strong>Dependents:</strong> <span id="dependents"></span></p>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="details-section">
+      <h4>Contact Information</h4>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Phone:</strong> <span id="phone"></span></p>
+      <p><strong>Mailing Address:</strong> <span id="mailing-address"></span></p>
+    </div>
+
+    <!-- Education -->
+    <div class="details-section">
+      <h4>Education</h4>
+      <ul id="education-list"></ul>
+    </div>
+
+    <!-- Work Experience -->
+    <div class="details-section">
+      <h4>Work Experience</h4>
+      <ul id="work-experience-list"></ul>
+    </div>
+
+    <!-- Achievements -->
+    <div class="details-section">
+      <h4>Achievements</h4>
+      <ul id="achievements-list"></ul>
+    </div>
+
+    <!-- Publications -->
+    <div class="details-section">
+      <h4>Publications</h4>
+      <ul id="publications-list"></ul>
+    </div>
+
+    <!-- Licenses and Certifications -->
+    <div class="details-section">
+      <h4>Licenses and Certifications</h4>
+      <ul id="licenses-list"></ul>
+    </div>
+
+    <!-- Extra Contributions and Memberships -->
+    <div class="details-section">
+      <h4>Extra Contributions and Memberships</h4>
+      <ul id="extra-contributions-list"></ul>
+    </div>
+
+    <!-- Language Proficiency -->
+    <div class="details-section">
+      <h4>Language Proficiency</h4>
+      <ul id="languages-list"></ul>
+    </div>
+
+    <!-- Immigration Information -->
+    <div class="details-section">
+      <h4>Immigration Information</h4>
+      <p><strong>Current Status:</strong> <span id="immigration-current-status"></span></p>
+      <p><strong>Previous Applications:</strong> <span id="immigration-previous-applications"></span></p>
+      <p><strong>Intentions:</strong> <span id="immigration-intentions"></span></p>
+      <p><strong>Relocation Preferences:</strong> <span id="immigration-relocation-preferences"></span></p>
+    </div>
+
+    <!-- Skills and Technical Expertise -->
+    <div class="details-section">
+      <h4>Skills and Technical Expertise</h4>
+      <p><strong>Core Competencies:</strong> <span id="core-competencies"></span></p>
+      <p><strong>Technical Skills:</strong> <span id="technical-skills"></span></p>
+      <p><strong>Cross Disciplines:</strong> <span id="cross-disciplines"></span></p>
+    </div>
+
+    <!-- Employment Offer Details -->
+    <div class="details-section">
+      <h4>Employment Offer Details</h4>
+      <ul id="employment-offers-list"></ul>
+    </div>
+
+    <!-- Financial Information -->
+    <div class="details-section">
+      <h4>Financial Information</h4>
+      <p><strong>Financial Support:</strong> <span id="financial-support"></span></p>
+      <p><strong>Financial Assets:</strong> <span id="financial-assets"></span></p>
+    </div>
+
+    <!-- Future Goals -->
+    <div class="details-section">
+      <h4>Future Goals</h4>
+      <ul id="future-goals-list"></ul>
+    </div>
+
+    <!-- Assessment -->
+    <div class="details-section">
+      <h4>Assessment</h4>
+      <p><strong>Score:</strong> <span id="score"></span></p>
+      <p><strong>Assessment:</strong> <span id="assessment"></span></p>
+    </div>
+
+    <!-- References -->
+    <div class="details-section">
+      <h4>References</h4>
+      <ul id="references-list"></ul>
+    </div>
+
+    <!-- Projects -->
+    <div class="details-section">
+      <h4>Projects</h4>
+      <ul id="projects-list"></ul>
+    </div>
+
+    <!-- Contributions -->
+    <div class="details-section">
+      <h4>Contributions</h4>
+      <p><strong>National Interest:</strong> <span id="contribution-national-interest"></span></p>
+      <p><strong>Job Creation:</strong> <span id="contribution-job-creation"></span></p>
+      <p><strong>Economic Impact:</strong> <span id="contribution-economy"></span></p>
+      <p><strong>Advancements:</strong> <span id="contribution-advancements"></span></p>
+    </div>
+
+    <!-- Uploaded Files -->
+    <div class="details-section">
+      <h4>Uploaded Files</h4>
+
+      <!-- CV Section -->
+      <div class="file-section">
+        <h5>CV/Resume</h5>
+        <ul id="cv-files-list"></ul>
+      </div>
+
+      <!-- Financial Proofs Section -->
+      <div class="file-section">
+        <h5>Financial Proofs</h5>
+        <ul id="financial-proofs-list"></ul>
+      </div>
+
+      <!-- Other Uploads Section -->
+      <div class="file-section">
+        <h5>Other Uploads</h5>
+        <ul id="upload-files-list"></ul>
+      </div>
+
+      <!-- Exhibits Section -->
+      <div class="file-section">
+        <h5>Exhibits</h5>
+        <ul id="exhibits-files-list"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+
+<!-- Include Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Include Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Initialize Select2 and Handle Candidate Selection -->
+<script>
+  $(document).ready(function() {
+    // Initialize Select2 on the candidate dropdown
+    $('#candidate-select').select2({
+      placeholder: "-- Select Candidate --",
+      allowClear: true,
+      width: 'resolve' // Adjusts the width to match the original select box
+    });
+
+    // Handle change event
+    $('#candidate-select').on('change', function() {
+      const selectedId = $(this).val();
+      const candidates = {{ candidates | tojson }};
+      const detailsSection = $('#candidate-details');
+
+      if (!selectedId) {
+        detailsSection.hide();
+        return;
+      }
+
+      const candidate = candidates.find(c => c.id === selectedId);
+      if (!candidate) {
+        detailsSection.hide();
+        return;
+      }
+
+      // Populate basic details
+      $('#candidate-name').text(candidate.full_name || "N/A");
+      $('#dob').text(candidate.dob || "N/A");
+      $('#nationality').text(candidate.nationality || "N/A");
+      $('#country-residence').text(candidate.country_residence || "N/A");
+      $('#passport-country').text(candidate.passport_country || "N/A");
+      $('#passport-expiry').text(candidate.passport_expiry || "N/A");
+      $('#marital-status').text(candidate.marital_status || "N/A");
+      $('#dependents').text(candidate.dependents || "N/A");
+      $('#email').text(candidate.email || "N/A");
+      $('#phone').text(candidate.phone || "N/A");
+      $('#mailing-address').text(candidate.mailing_address || "N/A");
+
+      // Populate education
+      const educationList = $('#education-list');
+      educationList.empty();
+      if (candidate.education_highest && candidate.education_highest.length > 0) {
+        candidate.education_highest.forEach((degree, index) => {
+          const field = candidate.education_field[index] || "N/A";
+          const university = candidate.education_university[index] || "N/A";
+          const country = candidate.education_country[index] || "N/A";
+          const graduationDate = candidate.education_graduation_dates[index] || "N/A";
+          const honors = candidate.education_honors[index] ? `, Honors: ${candidate.education_honors[index]}` : "";
+          const certifications = candidate.education_certifications[index] ? `, Certifications: ${candidate.education_certifications[index]}` : "";
+          const publications = candidate.education_publications[index] ? `, Publications: ${candidate.education_publications[index]}` : "";
+          const educationText = `${degree} in ${field} from ${university}, ${country} (${graduationDate})${honors}${certifications}${publications}`;
+          educationList.append($('<li>').text(educationText));
+        });
+      } else {
+        educationList.append($('<li>').text("N/A"));
+      }
+
+      // Populate work experience
+      const workList = $('#work-experience-list');
+      workList.empty();
+      if (candidate.experience_employer && candidate.experience_employer.length > 0) {
+        candidate.experience_employer.forEach((employer, index) => {
+          const location = candidate.experience_location[index] || "N/A";
+          const title = candidate.experience_title[index] || "N/A";
+          const duration = candidate.experience_duration[index] || "N/A";
+          const industry = candidate.experience_industry[index] || "N/A";
+          const responsibilities = candidate.experience_responsibilities[index] || "N/A";
+          const accomplishments = candidate.experience_accomplishments[index] || "N/A";
+          const skills = candidate.experience_skills[index] || "N/A";
+          const workText = `${title} at ${employer}, ${location} (${duration})\nIndustry: ${industry}\nResponsibilities: ${responsibilities}\nAccomplishments: ${accomplishments}\nSkills: ${skills}`;
+          workList.append($('<li>').text(workText));
+        });
+      } else {
+        workList.append($('<li>').text("N/A"));
+      }
+
+      // Populate achievements
+      const achievementsList = $('#achievements-list');
+      achievementsList.empty();
+      let hasAchievements = false;
+
+      // Awards
+      if (candidate.achievement_award && candidate.achievement_award.length > 0) {
+        candidate.achievement_award.forEach(award => {
+          if (award.trim()) {
+            achievementsList.append($('<li>').text(`Award: ${award}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      // Memberships
+      if (candidate.achievement_membership && candidate.achievement_membership.length > 0) {
+        candidate.achievement_membership.forEach(membership => {
+          if (membership.trim()) {
+            achievementsList.append($('<li>').text(`Membership: ${membership}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      // Patents
+      if (candidate.achievement_patents && candidate.achievement_patents.length > 0) {
+        candidate.achievement_patents.forEach(patent => {
+          if (patent.trim()) {
+            achievementsList.append($('<li>').text(`Patent: ${patent}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      // Leadership
+      if (candidate.achievement_leadership && candidate.achievement_leadership.length > 0) {
+        candidate.achievement_leadership.forEach(leadership => {
+          if (leadership.trim()) {
+            achievementsList.append($('<li>').text(`Leadership Role: ${leadership}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      // Research
+      if (candidate.achievement_research && candidate.achievement_research.length > 0) {
+        candidate.achievement_research.forEach(research => {
+          if (research.trim()) {
+            achievementsList.append($('<li>').text(`Research: ${research}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      // Speaking
+      if (candidate.achievement_speaking && candidate.achievement_speaking.length > 0) {
+        candidate.achievement_speaking.forEach(speaking => {
+          if (speaking.trim()) {
+            achievementsList.append($('<li>').text(`Speaking Engagement: ${speaking}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      // Community
+      if (candidate.achievement_community && candidate.achievement_community.length > 0) {
+        candidate.achievement_community.forEach(community => {
+          if (community.trim()) {
+            achievementsList.append($('<li>').text(`Community Involvement: ${community}`));
+            hasAchievements = true;
+          }
+        });
+      }
+
+      if (!hasAchievements) {
+        achievementsList.append($('<li>').text("N/A"));
+      }
+
+      // Populate publications
+      const publicationsList = $('#publications-list');
+      publicationsList.empty();
+      let hasPublications = false;
+
+      if (candidate.publication_title && candidate.publication_title.length > 0) {
+        candidate.publication_title.forEach((title, index) => {
+          if (title.trim()) {
+            const type = candidate.publication_type[index] || "N/A";
+            const publisher = candidate.publication_publisher[index] || "N/A";
+            const date = candidate.publication_date[index] || "N/A";
+            const media = candidate.publication_media[index] || "N/A";
+            const presentations = candidate.publication_presentations[index] || "N/A";
+            const citations = candidate.publication_citations[index] || "N/A";
+            const publicationText = `${type}: "${title}" published by ${publisher} on ${date}\nMedia: ${media}\nPresentations: ${presentations}\nCitations: ${citations}`;
+            publicationsList.append($('<li>').text(publicationText));
+            hasPublications = true;
+          }
+        });
+      }
+
+      if (!hasPublications) {
+        publicationsList.append($('<li>').text("N/A"));
+      }
+
+      // Populate licenses and certifications
+      const licensesList = $('#licenses-list');
+      licensesList.empty();
+      let hasLicenses = false;
+
+      if (candidate.license_name && candidate.license_name.length > 0) {
+        candidate.license_name.forEach((name, index) => {
+          if (name.trim()) {
+            const authority = candidate.license_authority[index] || "N/A";
+            const validity = candidate.license_validity[index] || "N/A";
+            const number = candidate.license_number[index] || "N/A";
+            const details = candidate.license_details[index] || "N/A";
+            const licenseText = `License: ${name}\nAuthority: ${authority}\nValidity: ${validity}\nNumber: ${number}\nDetails: ${details}`;
+            licensesList.append($('<li>').text(licenseText));
+            hasLicenses = true;
+          }
+        });
+      }
+
+      if (!hasLicenses) {
+        licensesList.append($('<li>').text("N/A"));
+      }
+
+      // Populate extra contributions and memberships
+      const extraContributionsList = $('#extra-contributions-list');
+      extraContributionsList.empty();
+      let hasExtraContributions = false;
+
+      if (candidate.extra_contributions && candidate.extra_contributions.length > 0) {
+        candidate.extra_contributions.forEach(contribution => {
+          if (contribution.trim()) {
+            extraContributionsList.append($('<li>').text(`Contribution: ${contribution}`));
+            hasExtraContributions = true;
+          }
+        });
+      }
+
+      if (candidate.extra_memberships && candidate.extra_memberships.length > 0) {
+        candidate.extra_memberships.forEach(membership => {
+          if (membership.trim()) {
+            extraContributionsList.append($('<li>').text(`Membership: ${membership}`));
+            hasExtraContributions = true;
+          }
+        });
+      }
+
+      if (candidate.extra_roles && candidate.extra_roles.length > 0) {
+        candidate.extra_roles.forEach(role => {
+          if (role.trim()) {
+            extraContributionsList.append($('<li>').text(`Role: ${role}`));
+            hasExtraContributions = true;
+          }
+        });
+      }
+
+      if (candidate.extra_commercial && candidate.extra_commercial.length > 0) {
+        candidate.extra_commercial.forEach(commercial => {
+          if (commercial.trim()) {
+            extraContributionsList.append($('<li>').text(`Commercial Contribution: ${commercial}`));
+            hasExtraContributions = true;
+          }
+        });
+      }
+
+      if (!hasExtraContributions) {
+        extraContributionsList.append($('<li>').text("N/A"));
+      }
+
+      // Populate projects
+      const projectsList = $('#projects-list');
+      projectsList.empty();
+      let hasProjects = false;
+
+      if (candidate.project_name && candidate.project_name.length > 0) {
+        candidate.project_name.forEach((name, index) => {
+          if (name.trim()) {
+            const scope = candidate.project_scope[index] || "N/A";
+            const impact = candidate.project_impact[index] || "N/A";
+            const changes = candidate.project_changes[index] || "N/A";
+            const solutions = candidate.project_solutions[index] || "N/A";
+            const projectText = `Project Name: ${name}\nScope: ${scope}\nImpact: ${impact}\nChanges: ${changes}\nSolutions: ${solutions}`;
+            projectsList.append($('<li>').text(projectText));
+            hasProjects = true;
+          }
+        });
+      }
+
+      if (!hasProjects) {
+        projectsList.append($('<li>').text("N/A"));
+      }
+
+      // Populate language proficiency
+      const languagesList = $('#languages-list');
+      languagesList.empty();
+      let hasLanguages = false;
+
+      if (candidate.language && candidate.language.length > 0) {
+        candidate.language.forEach((language, index) => {
+          if (language.trim()) {
+            const proficiency = candidate.language_proficiency[index] || "N/A";
+            const certification = candidate.language_certifications[index] || "N/A";
+            const languageText = `Language: ${language}\nProficiency: ${proficiency}\nCertification: ${certification}`;
+            languagesList.append($('<li>').text(languageText));
+            hasLanguages = true;
+          }
+        });
+      }
+
+      if (!hasLanguages) {
+        languagesList.append($('<li>').text("N/A"));
+      }
+
+      // Populate immigration information
+      $('#immigration-current-status').text(candidate.immigration_current_status ? candidate.immigration_current_status.join(", ") : "N/A");
+      $('#immigration-previous-applications').text(candidate.immigration_previous_applications ? candidate.immigration_previous_applications.join(", ") : "N/A");
+      $('#immigration-intentions').text(candidate.immigration_intentions ? candidate.immigration_intentions.join(", ") : "N/A");
+      $('#immigration-relocation-preferences').text(candidate.immigration_relocation_preferences ? candidate.immigration_relocation_preferences.join(", ") : "N/A");
+
+      // Populate skills
+      $('#core-competencies').text(candidate.core_competencies || "N/A");
+      $('#technical-skills').text(candidate.technical_skills || "N/A");
+      $('#cross-disciplines').text(candidate.cross_disciplines || "N/A");
+
+      // Populate contributions
+      $('#contribution-national-interest').text(
+        (candidate.contribution_national_interest && candidate.contribution_national_interest.length > 0) ?
+        candidate.contribution_national_interest.join(", ") : "N/A"
+      );
+      $('#contribution-job-creation').text(
+        (candidate.contribution_job_creation && candidate.contribution_job_creation.length > 0) ?
+        candidate.contribution_job_creation.join(", ") : "N/A"
+      );
+      $('#contribution-economy').text(
+        (candidate.contribution_economy && candidate.contribution_economy.length > 0) ?
+        candidate.contribution_economy.join(", ") : "N/A"
+      );
+      $('#contribution-advancements').text(
+        (candidate.contribution_advancements && candidate.contribution_advancements.length > 0) ?
+        candidate.contribution_advancements.join(", ") : "N/A"
+      );
+
+      // Populate employment offers
+      const employmentOffersList = $('#employment-offers-list');
+      employmentOffersList.empty();
+      let hasEmploymentOffers = false;
+
+      if (candidate.employment_offer_employer && candidate.employment_offer_employer.length > 0) {
+        candidate.employment_offer_employer.forEach((employer, index) => {
+          if (employer.trim()) {
+            const details = candidate.employment_offer_details[index] || "N/A";
+            const title = candidate.employment_offer_title[index] || "N/A";
+            const description = candidate.employment_offer_description[index] || "N/A";
+            const laborCert = candidate.employment_offer_labor_cert[index] || "N/A";
+            const salary = candidate.employment_offer_salary[index] || "N/A";
+            const employmentText = `Employer: ${employer}\nDetails: ${details}\nTitle: ${title}\nDescription: ${description}\nLabor Certification: ${laborCert}\nSalary: ${salary}`;
+            employmentOffersList.append($('<li>').text(employmentText));
+            hasEmploymentOffers = true;
+          }
+        });
+      }
+
+      if (!hasEmploymentOffers) {
+        employmentOffersList.append($('<li>').text("N/A"));
+      }
+
+      // Populate financial information
+      $('#financial-support').text(candidate.financial_support || "N/A");
+      $('#financial-assets').text(candidate.financial_assets || "N/A");
+
+      // Populate future goals
+      const futureGoalsList = $('#future-goals-list');
+      futureGoalsList.empty();
+      let hasFutureGoals = false;
+
+      if (candidate.future_short_term && candidate.future_short_term.length > 0) {
+        candidate.future_short_term.forEach(goal => {
+          if (goal.trim()) {
+            futureGoalsList.append($('<li>').text(`Short Term: ${goal}`));
+            hasFutureGoals = true;
+          }
+        });
+      }
+
+      if (candidate.future_long_term && candidate.future_long_term.length > 0) {
+        candidate.future_long_term.forEach(goal => {
+          if (goal.trim()) {
+            futureGoalsList.append($('<li>').text(`Long Term: ${goal}`));
+            hasFutureGoals = true;
+          }
+        });
+      }
+
+      if (candidate.future_contribution && candidate.future_contribution.length > 0) {
+        candidate.future_contribution.forEach(contribution => {
+          if (contribution.trim()) {
+            futureGoalsList.append($('<li>').text(`Contribution: ${contribution}`));
+            hasFutureGoals = true;
+          }
+        });
+      }
+
+      if (!hasFutureGoals) {
+        futureGoalsList.append($('<li>').text("N/A"));
+      }
+
+      // Populate score and assessment
+      $('#score').text(
+        (candidate.score !== undefined && candidate.score !== null) ? candidate.score : "N/A"
+      );
+      $('#assessment').text(candidate.assessment || "N/A");
+
+      // Populate references
+      const referencesList = $('#references-list');
+      referencesList.empty();
+      if (candidate.reference_name && candidate.reference_name.length > 0) {
+        candidate.reference_name.forEach((name, index) => {
+          if (name.trim()) {
+            const title = candidate.reference_title[index] || "N/A";
+            const contact = candidate.reference_contact[index] || "N/A";
+            const relationship = candidate.reference_relationship[index] || "N/A";
+            const referenceText = `Name: ${name}\nTitle: ${title}\nContact: ${contact}\nRelationship: ${relationship}`;
+            referencesList.append($('<li>').text(referenceText));
+          }
+        });
+      }
+      if (referencesList.children().length === 0) {
+        referencesList.append($('<li>').text("N/A"));
+      }
+
+      // Populate CV/Resume
+      const cvFilesList = $('#cv-files-list');
+      cvFilesList.empty();
+      if (candidate.cv_file) {
+        const link = $('<a>')
+          .attr('href', `/${candidate.cv_file}`)
+          .attr('target', '_blank')
+          .attr('rel', 'noopener noreferrer')
+          .text('View CV/Resume');
+        const viewIcon = $('<span>').html(' &#128065;'); // Unicode eye icon
+        link.append(viewIcon);
+        cvFilesList.append($('<li>').append(link));
+      } else {
+        cvFilesList.append($('<li>').text("N/A"));
+      }
+
+      // Populate Financial Proofs
+      const financialProofsList = $('#financial-proofs-list');
+      financialProofsList.empty();
+      if (candidate.financial_proof && candidate.financial_proof.length > 0) {
+        candidate.financial_proof.forEach((filePath, index) => {
+          if (filePath.trim()) {
+            const link = $('<a>')
+              .attr('href', `/${filePath}`)
+              .attr('target', '_blank')
+              .attr('rel', 'noopener noreferrer')
+              .text(`Financial Proof ${index + 1}`);
+            const viewIcon = $('<span>').html(' &#128065;'); // Unicode eye icon
+            link.append(viewIcon);
+            financialProofsList.append($('<li>').append(link));
+          }
+        });
+      } else {
+        financialProofsList.append($('<li>').text("N/A"));
+      }
+
+      // Populate Other Uploads
+      const uploadFilesList = $('#upload-files-list');
+      uploadFilesList.empty();
+      if (candidate.upload_file && candidate.upload_file.length > 0) {
+        candidate.upload_file.forEach((filePath, index) => {
+          if (filePath.trim()) {
+            const link = $('<a>')
+              .attr('href', `/${filePath}`)
+              .attr('target', '_blank')
+              .attr('rel', 'noopener noreferrer')
+              .text(`Upload ${index + 1}`);
+            const viewIcon = $('<span>').html(' &#128065;'); // Unicode eye icon
+            link.append(viewIcon);
+            uploadFilesList.append($('<li>').append(link));
+          }
+        });
+      } else {
+        uploadFilesList.append($('<li>').text("N/A"));
+      }
+
+      // Populate Exhibits
+      const exhibitsFilesList = $('#exhibits-files-list');
+      exhibitsFilesList.empty();
+      if (candidate.exhibits && candidate.exhibits.length > 0) {
+        candidate.exhibits.forEach((filePath, index) => {
+          if (filePath.trim()) {
+            const link = $('<a>')
+              .attr('href', `/${filePath}`)
+              .attr('target', '_blank')
+              .attr('rel', 'noopener noreferrer')
+              .text(`Exhibit ${index + 1}`);
+            const viewIcon = $('<span>').html(' &#128065;'); // Unicode eye icon
+            link.append(viewIcon);
+            exhibitsFilesList.append($('<li>').append(link));
+          }
+        });
+      } else {
+        exhibitsFilesList.append($('<li>').text("N/A"));
+      }
+
+      // Show the details section
+      detailsSection.show();
+    });
+  });
+</script>
+{% endblock %}

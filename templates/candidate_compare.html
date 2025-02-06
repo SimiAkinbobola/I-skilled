@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate Comparison{% endblock %}
+{% block header %}Candidate Comparison Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Comparison of Selected Candidates</h2>
+  
+  {% if candidates %}
+  <div class="compare-dashboard row g-4">
+    {% for candidate in candidates %}
+      <div class="compare-card col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h4 class="card-title text-center">{{ candidate.full_name }}</h4>
+            <hr>
+            <p><strong>Score:</strong> {{ candidate.score }}</p>
+            <p><strong>Assessment:</strong> 
+              {% if candidate.assessment %}
+                {{ candidate.assessment }}
+              {% else %}
+                <span class="text-muted">Pending Evaluation</span>
+              {% endif %}
+            </p>
+            <p><strong>Education:</strong> {{ candidate.education_highest | default("N/A") | join(", ") }}</p>
+            <p><strong>Field:</strong> {{ candidate.education_field | default("N/A") | join(", ") }}</p>
+            <p><strong>Current Position:</strong> 
+              {{ candidate.experience_title[0] | default("N/A") }}
+            </p>
+            {% if candidate.experience_employer[0] %}
+              <p><strong>Company:</strong> {{ candidate.experience_employer[0] }}</p>
+            {% endif %}
+            {% if candidate.experience_skills %}
+              <p><strong>Skills:</strong> {{ candidate.experience_skills | join(", ") }}</p>
+            {% endif %}
+            <p><strong>Awards:</strong> {{ candidate.awards | default("None") | join(", ") }}</p>
+            <p><strong>Languages:</strong> {{ candidate.language | default("None") | join(", ") }}</p>
+            <p><strong>Years of Experience:</strong> {{ candidate.work_experience }}</p>
+          </div>
+          <div class="card-footer text-center">
+            <a href="{{ url_for('candidate_detail', candidate_id=candidate.id) }}" 
+               class="btn btn-primary btn-sm">
+              View Detailed Report
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      <strong>No candidates selected for comparison.</strong> Please select candidates and try again.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

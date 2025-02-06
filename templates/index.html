@@ -1,0 +1,40 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Candidate List{% endblock %}
+{% block header %}All Candidates{% endblock %}
+
+{% block content %}
+  <h2>Candidate Submissions</h2>
+  {% if candidates %}
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Assessment</th>
+          <th>Score</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for candidate in candidates %}
+          <tr>
+            <td>{{ candidate.full_name }}</td>
+            <td>{{ candidate.email }}</td>
+            <td>{{ candidate.assessment }}</td>
+            <td>{{ candidate.score }}</td>
+            <td>
+              <!-- This link sends the candidate's id to the candidate_detail route -->
+              <a href="{{ url_for('candidate_detail', candidate_id=candidate.id) }}">
+                View Report
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No candidate submissions yet.</p>
+  {% endif %}
+{% endblock %}

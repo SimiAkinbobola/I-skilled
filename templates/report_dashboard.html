@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Reports Dashboard{% endblock %}
+{% block header %}Candidate Reports Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+  <!-- Dashboard Cards -->
+  <div class="card-container">
+    <div class="card" style="background-color:#4CAF50;">
+      <h3>Total Candidates</h3>
+      <p>{{ stats.total }}</p>
+    </div>
+    <div class="card" style="background-color:#2196F3;">
+      <h3>High Skilled Candidates</h3>
+      <p>{{ stats.high_skilled }}</p>
+    </div>
+    <div class="card" style="background-color:#FF9800;">
+      <h3>Average Score</h3>
+      <p>{{ stats.average_score }}</p>
+    </div>
+    <div class="card" style="background-color:#9C27B0;">
+      <h3>Most Common Visa</h3>
+      <p>{{ stats.most_common_visa }}</p>
+    </div>
+    <div class="card" style="background-color:#e91e63;">
+      <h3>Overview</h3>
+      <p>{{ stats.overview }}</p>
+    </div>
+  </div>
+
+  <!-- Charts Grid (2 per row, 6 plots total) -->
+  <div class="charts-grid">
+    <!-- Plot 1: Doughnut Chart - Assessment Distribution -->
+    <div class="chart-item">
+      <canvas id="assessmentChart"></canvas>
+    </div>
+    <!-- Plot 2: Radar Chart - Score Distribution -->
+    <div class="chart-item">
+      <canvas id="radarChart"></canvas>
+    </div>
+    <!-- Plot 3: Pie Chart - Education Distribution -->
+    <div class="chart-item">
+      <canvas id="educationChart"></canvas>
+    </div>
+    <!-- Plot 4: Horizontal Bar Chart - Top Companies -->
+    <div class="chart-item">
+      <canvas id="companyChart"></canvas>
+    </div>
+    <!-- Plot 5: Scatter Plot - Score vs Experience -->
+    <div class="chart-item">
+      <canvas id="scatterChart"></canvas>
+    </div>
+    <!-- Plot 6: Bar Chart - Experience Distribution -->
+    <div class="chart-item">
+      <canvas id="experienceChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Latest Candidate Submissions Table -->
+  <div class="latest-submissions">
+    <h3>Latest Candidate Submissions</h3>
+    <table class="latest-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Experience (yrs)</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for candidate in stats.latest_candidates|default([]) %}
+          <tr>
+            <td>{{ candidate.full_name }}</td>
+            <td>{{ candidate.email }}</td>
+            <td>{{ candidate.work_experience }}</td>
+            <td>{{ candidate.score }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Load Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  // Plot 1: Doughnut Chart - Candidate Assessment Distribution
+  var ctx1 = document.getElementById('assessmentChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: ['High Skilled', 'Needs Review'],
+      datasets: [{
+        data: [{{ stats.high_skilled }}, {{ stats.total - stats.high_skilled }}],
+        backgroundColor: ['#4CAF50', '#f44336']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: true, text: 'Assessment Distribution' }
+      }
+    }
+  });
+
+  // Plot 2: Radar Chart - Score Distribution
+  var ctx2 = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'radar',
+    data: {
+      labels: {{ stats.radar_labels|default([])|tojson }},
+      datasets: [{
+        label: 'Candidate Count',
+        data: {{ stats.radar_data|default([])|tojson }},
+        backgroundColor: 'rgba(0, 123, 255, 0.3)',
+        borderColor: 'rgba(0, 123, 255, 1)',
+        pointBackgroundColor: 'rgba(0, 123, 255, 1)'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: true, text: 'Score Distribution' }
+      }
+    }
+  });
+  
+  // Plot 3: Pie Chart - Education Distribution
+  var ctx3 = document.getElementById('educationChart').getContext('2d');
+  new Chart(ctx3, {
+    type: 'pie',
+    data: {
+      labels: {{ stats.education_labels|default([])|tojson }},
+      datasets: [{
+        data: {{ stats.education_data|default([])|tojson }},
+        backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#8BC34A','#9C27B0']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: true, text: 'Education Distribution' }
+      }
+    }
+  });
+  
+  // Plot 4: Horizontal Bar Chart - Top Companies
+  var ctx4 = document.getElementById('companyChart').getContext('2d');
+  new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: {{ stats.company_labels|default([])|tojson }},
+      datasets: [{
+        label: 'Candidates',
+        data: {{ stats.company_data|default([])|tojson }},
+        backgroundColor: 'rgba(255, 152, 0, 0.6)',
+        borderColor: 'rgba(255, 152, 0, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } },
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: 'Top Companies' }
+      }
+    }
+  });
+  
+  // Plot 5: Scatter Plot - Score vs Experience
+  var ctx5 = document.getElementById('scatterChart').getContext('2d');
+  new Chart(ctx5, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Score vs Experience',
+        data: {{ stats.scatter_data|default([])|tojson }},
+        backgroundColor: 'rgba(156, 39, 176, 0.6)',
+        borderColor: 'rgba(156, 39, 176, 1)',
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { title: { display: true, text: 'Years of Experience' }, beginAtZero: true },
+        y: { title: { display: true, text: 'Score' }, beginAtZero: true }
+      },
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: true, text: 'Score vs Experience' }
+      }
+    }
+  });
+  
+  // Plot 6: Bar Chart - Experience Distribution
+  var ctx6 = document.getElementById('experienceChart').getContext('2d');
+  new Chart(ctx6, {
+    type: 'bar',
+    data: {
+      labels: {{ stats.experience_labels|default([])|tojson }},
+      datasets: [{
+        label: 'Candidates',
+        data: {{ stats.experience_data|default([])|tojson }},
+        backgroundColor: 'rgba(33, 150, 243, 0.6)',
+        borderColor: 'rgba(33, 150, 243, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: true, text: 'Experience Distribution' }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

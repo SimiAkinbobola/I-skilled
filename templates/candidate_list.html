@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Candidate List{% endblock %}
+{% block header %}All Candidate Submissions{% endblock %}
+
+{% block content %}
+  <h2>Candidate Submissions</h2>
+  
+  <!-- Enhanced Filter Dropdown -->
+  <form method="GET" action="{{ url_for('index') }}" class="filter-form" style="margin-bottom:20px;">
+    <label for="assessment_filter">Filter by Assessment:</label>
+    <select name="assessment" id="assessment_filter">
+      <option value="">All</option>
+      <option value="High Skilled Candidate" {% if request.args.get('assessment') == 'High Skilled Candidate' %}selected{% endif %}>
+        High Skilled Candidate
+      </option>
+      <option value="Needs Further Review" {% if request.args.get('assessment') == 'Needs Further Review' %}selected{% endif %}>
+        Needs Further Review
+      </option>
+    </select>
+    <button type="submit" class="btn-filter">Apply</button>
+  </form>
+
+  <!-- Candidate Table with Broader Layout and Score Coloring -->
+  <form method="POST" action="{{ url_for('candidate_compare') }}">
+    {% if candidates %}
+      <table class="candidate-table">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Assessment</th>
+            <th>Score</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for candidate in candidates %}
+            <tr>
+              <td>
+                <input type="checkbox" name="candidate_ids" value="{{ candidate.id }}">
+              </td>
+              <td>{{ candidate.full_name }}</td>
+              <td>{{ candidate.email }}</td>
+              <td>{{ candidate.assessment }}</td>
+              <td>
+                {% if candidate.score >= 80 %}
+                  <span class="score high">{{ candidate.score }}</span>
+                {% elif candidate.score >= 50 %}
+                  <span class="score medium">{{ candidate.score }}</span>
+                {% else %}
+                  <span class="score low">{{ candidate.score }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="view-report" href="{{ url_for('candidate_detail', candidate_id=candidate.id) }}">
+                  <i class="fas fa-eye"></i> View Report
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit" class="btn-compare" style="margin-top: 15px;">Compare Selected</button>
+    {% else %}
+      <p>No candidate submissions yet.</p>
+    {% endif %}
+  </form>
+{% endblock %}
