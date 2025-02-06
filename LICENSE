@@ -1,21 +1,32 @@
-MIT License
+MIT License with Owner Collaboration Clause
 
-Copyright (c) 2025 i-Skilled by Deborah Akinbobola
+Copyright (c) 2025
+i‑Skilled by Deborah Akinbobola
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software in accordance with the following terms and conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+General Use.
+You are permitted to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software under the terms of this License, subject to the conditions set forth herein. The Software is provided under the same broad permissions as the MIT License (see “Disclaimer” below).
+Owner Collaboration for Repurposing or Installation.
+a. Major Modifications. Any modification, repurposing, or installation (hereafter, "Major Modification") that results in a change of the Software’s original intended functionality or that involves deploying the Software for public or commercial use must be executed in collaboration with the copyright owner.
+b. Prior Approval Requirement. Before making any Major Modification, you must contact the owner at a designated contact point (e.g., email or other means provided by the owner) to discuss your intended changes and secure explicit, written authorization.
+c. Non-Collaborative Use. Any use, distribution, or installation of a repurposed version of the Software that has not been approved in writing by the owner is prohibited.
+Permissible Modifications.
+a. Modifications solely for internal use, experimental purposes, or personal projects that do not lead to public deployment or commercial exploitation are allowed without prior collaboration, provided that such modifications do not alter the fundamental design or intended functionality of the Software.
+b. In all cases, if you subsequently decide to distribute or deploy a modified version publicly, you must retroactively secure the owner’s approval as outlined in Section 2.
+Distribution Requirements.
+a. Any distribution of the Software, whether modified or unmodified, must include a complete copy of this License.
+b. In the case of a Major Modification, the distribution must clearly state that the version distributed was subject to collaborative development under this License and include a reference to the correspondence or agreement with the owner (without disclosing any confidential details).
+Reservation of Rights.
+The owner reserves the right to refuse or withdraw permission for any proposed Major Modification if it is determined that such changes do not align with the original objectives or integrity of the Software. The owner’s decision is final and must be respected by all parties.
+Attribution.
+The above copyright notice and this permission notice, including the collaboration clause, must be included in all copies or substantial portions of the Software.
+Disclaimer.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Notes for Use:
+
+Customization: This license template is provided as a starting point. You may need to modify language (especially around what constitutes a “Major Modification”) or add additional terms specific to your project.
+Legal Advice: It is advisable to have this license reviewed by a legal professional to ensure it fully protects your rights and reflects your intentions accurately.
+Contact Information: Ensure that you include clear instructions or contact details for potential collaborators to reach you regarding modifications.
+By using this license, you indicate that users of your Software agree to these terms, ensuring that significant changes or repurposing are made only in cooperation with you as the owner.
